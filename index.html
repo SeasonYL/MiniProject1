@@ -113,7 +113,12 @@
   .empty-state { color:var(--gray4); font-size:12px; text-align:center; padding:46px 20px; font-family:var(--font-mono); line-height:1.6; }
 
   .history-wrap { margin-top:24px; background:var(--gray1); border:1px solid var(--gray2); border-radius:12px; overflow:hidden; }
-  .history-wrap h3 { font-family:var(--font-mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gray4); padding:18px 20px 12px; }
+  .history-wrap h3 { font-family:var(--font-mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gray4); }
+  .history-head { display:flex; justify-content:space-between; align-items:center; padding:18px 20px 12px; }
+  .data-btns { display:flex; gap:8px; }
+  .ghost-btn { font-family:var(--font-mono); font-size:9px; letter-spacing:1px; text-transform:uppercase; padding:5px 12px; border-radius:4px; border:1px solid var(--gray2); background:transparent; color:var(--gray4); cursor:pointer; transition:all .15s; }
+  .ghost-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .storage-warn { background:rgba(255,143,163,.08); border:1px solid rgba(255,143,163,.3); border-radius:6px; padding:10px 14px; font-family:var(--font-mono); font-size:11px; color:var(--pink); margin-bottom:20px; display:none; }
   table { width:100%; border-collapse:collapse; }
   th,td { text-align:left; padding:12px 14px; font-size:12px; border-top:1px solid var(--gray2); }
   th { font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gray4); }
@@ -239,6 +244,7 @@
 <!-- ===== PROGRESS TRACKER (REDESIGNED) ===== -->
 <section>
   <div class="section-label">進度追蹤 — 記錄你嘅每一步</div>
+  <div class="storage-warn" id="storageWarn">⚠ 呢個瀏覽器唔支援永久儲存，記錄喺閂頁後會消失。建議每次記錄後用「匯出 JSON」儲存備份。</div>
   <p class="tracker-intro">每次量度就入返嚟。數據會自動儲存喺呢個裝置,仲會幫你畫圖表睇趨勢。建議每週固定同一日、同一時間（例如朝早起身後）量度。</p>
 
   <div class="stat-cards" id="statCards">
@@ -311,7 +317,7 @@
   </div>
 
   <div class="history-wrap">
-    <h3>記錄歷史</h3>
+    <div class="history-head"><h3>記錄歷史</h3><div class="data-btns"><button class="ghost-btn" id="exportBtn">匯出 JSON</button><label class="ghost-btn" for="importFile">匯入 JSON</label><input type="file" id="importFile" accept=".json" style="display:none"></div></div>
     <table>
       <thead><tr><th>日期</th><th>體重</th><th>體脂</th><th class="hide-mobile">腰圍</th><th class="hide-mobile">胸圍</th><th class="hide-mobile">手臂</th><th class="hide-mobile">大腿</th><th></th></tr></thead>
       <tbody id="historyBody"><tr><td colspan="8" style="color:var(--gray4); text-align:center; padding:24px;">仲未有記錄</td></tr></tbody>
@@ -503,26 +509,49 @@
 
   /* ============ PROGRESS TRACKER ============ */
   const START_WEIGHT = 97, GOAL_WEIGHT = 76, START_BF = 29.5;
-  const KEY = 'gp_progress_entries';
-  let entries = [];
+  const LS_KEY = 'gp_progress_entries';
+  let entries = [], _db = null;
 
-  // detect if localStorage is usable (some browsers / privacy modes block it)
-  let storageOK = false;
-  try { const t='__t'; localStorage.setItem(t,'1'); localStorage.removeItem(t); storageOK = true; }
-  catch(e){ storageOK = false; }
-
-  function loadEntries() {
-    if (storageOK) {
-      try { const raw = localStorage.getItem(KEY); entries = raw ? JSON.parse(raw) : []; }
-      catch (e) { entries = []; }
-    }
-    entries.sort((a,b)=> a.date.localeCompare(b.date));
+  function _openDB() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('gp_progress_db', 1);
+      r.onupgradeneeded = e => e.target.result.createObjectStore('entries', {keyPath:'date'});
+      r.onsuccess = e => { _db = e.target.result; res(); };
+      r.onerror = rej;
+    });
   }
-  function saveEntries() {
-    if (storageOK) {
-      try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch (e) { storageOK = false; }
+  async function loadEntries() {
+    try {
+      await _openDB();
+      entries = await new Promise((res, rej) => {
+        const req = _db.transaction('entries','readonly').objectStore('entries').getAll();
+        req.onsuccess = e => res(e.target.result || []);
+        req.onerror = rej;
+      });
+      entries.sort((a,b) => a.date.localeCompare(b.date));
+      // one-time migration from localStorage
+      if (!entries.length) {
+        try {
+          const raw = localStorage.getItem(LS_KEY);
+          if (raw) { entries = JSON.parse(raw); await saveEntries(); localStorage.removeItem(LS_KEY); }
+        } catch(e) {}
+      }
+    } catch(e) {
+      // IndexedDB unavailable, fall back to localStorage
+      try { const raw = localStorage.getItem(LS_KEY); entries = raw ? JSON.parse(raw) : []; } catch(e2) { entries = []; }
+      entries.sort((a,b) => a.date.localeCompare(b.date));
+      document.getElementById('storageWarn').style.display = 'block';
     }
-    // if storage blocked, data still lives in the `entries` array for this session
+  }
+  async function saveEntries() {
+    if (_db) {
+      const tx = _db.transaction('entries','readwrite'), store = tx.objectStore('entries');
+      store.clear();
+      entries.forEach(e => store.put(e));
+      await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+    } else {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(entries)); } catch(e) {}
+    }
   }
   function fmt(n){ return (n===null||n===undefined||n==='')?'—':n; }
 
@@ -556,7 +585,7 @@
       '</td><td class="hide-mobile">'+fmt(e.arm)+'</td><td class="hide-mobile">'+fmt(e.thigh)+
       '</td><td><button class="del-btn" data-date="'+e.date+'">✕</button></td></tr>'
     ).join('');
-    body.querySelectorAll('.del-btn').forEach(b=>{ b.onclick=()=>{ entries=entries.filter(x=>x.date!==b.dataset.date); saveEntries(); renderAll(); }; });
+    body.querySelectorAll('.del-btn').forEach(b=>{ b.onclick=async ()=>{ entries=entries.filter(x=>x.date!==b.dataset.date); await saveEntries(); renderAll(); }; });
   }
 
   function drawChart(canvasId, emptyId, getVal, color, startVal) {
@@ -593,7 +622,7 @@
       inp.value=(cur+step).toFixed(1); };
   });
 
-  document.getElementById('saveBtn').onclick = ()=>{
+  document.getElementById('saveBtn').onclick = async ()=>{
     const date=document.getElementById('inDate').value;
     const weight=parseFloat(document.getElementById('inWeight').value);
     const msg=document.getElementById('formMsg');
@@ -601,9 +630,9 @@
     const get=id=>{const v=document.getElementById(id).value; return v===''?null:parseFloat(v);};
     const entry={date,weight,bf:get('inBf'),waist:get('inWaist'),chest:get('inChest'),arm:get('inArm'),thigh:get('inThigh')};
     entries=entries.filter(e=>e.date!==date); entries.push(entry); entries.sort((a,b)=>a.date.localeCompare(b.date));
-    saveEntries();
+    await saveEntries();
     msg.style.color='#d4ff00';
-    msg.textContent = storageOK ? '✓ 已儲存！繼續努力 💪' : '✓ 已記錄（此瀏覽器唔支援永久儲存，閂咗頁會唔記得）';
+    msg.textContent='✓ 已儲存！繼續努力 💪';
     ['inWeight','inBf','inWaist','inChest','inArm','inThigh'].forEach(id=>document.getElementById(id).value='');
     renderAll(); setTimeout(()=>msg.textContent='',4000);
   };
@@ -612,7 +641,30 @@
   document.getElementById('inDate').value=new Date().toISOString().slice(0,10);
   window.addEventListener('resize', renderCharts);
   buildMeals();
-  loadEntries(); renderAll();
+  loadEntries().then(renderAll);
+
+  document.getElementById('exportBtn').onclick = () => {
+    if (!entries.length) { alert('仲未有記錄可以匯出'); return; }
+    const blob = new Blob([JSON.stringify(entries, null, 2)], {type:'application/json'});
+    const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:'coach-gp-progress.json'});
+    a.click(); URL.revokeObjectURL(a.href);
+  };
+  document.getElementById('importFile').onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw 0;
+        entries = data.filter(r => r.date && !isNaN(+r.weight));
+        entries.sort((a,b)=>a.date.localeCompare(b.date));
+        await saveEntries(); renderAll();
+        alert('✓ 匯入成功！共 ' + entries.length + ' 條記錄');
+      } catch(err) { alert('檔案格式有誤，請匯入正確嘅 JSON 檔案'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 </script>
 
 </body>
