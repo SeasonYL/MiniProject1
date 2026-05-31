@@ -214,6 +214,17 @@
   footer { padding:18px 40px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
   footer p { font-family:var(--font-mono); font-size:10px; color:var(--gray4); letter-spacing:1.5px; }
   .gp-tag { font-family:var(--font-display); font-size:20px; color:var(--accent); letter-spacing:2px; }
+
+  /* AUTH */
+  .auth-area { display:flex; align-items:center; gap:12px; margin-top:20px; flex-wrap:wrap; }
+  .login-btn { font-family:var(--font-mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 22px; border-radius:6px; border:1.5px solid var(--accent); background:transparent; color:var(--accent); cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:8px; }
+  .login-btn:hover { background:var(--accent); color:var(--black); }
+  .user-chip { display:none; align-items:center; gap:10px; background:var(--gray1); border:1px solid var(--gray2); border-radius:24px; padding:6px 14px 6px 6px; }
+  .user-avatar { width:28px; height:28px; border-radius:50%; }
+  .user-name { font-family:var(--font-mono); font-size:11px; color:var(--white); }
+  .logout-btn { font-family:var(--font-mono); font-size:9px; color:var(--gray4); background:none; border:none; cursor:pointer; padding:0 0 0 10px; border-left:1px solid var(--gray2); margin-left:4px; }
+  .logout-btn:hover { color:var(--pink); }
+  .login-gate { text-align:center; padding:60px 20px; color:var(--gray4); font-family:var(--font-mono); font-size:12px; line-height:2.2; }
 </style>
 </head>
 <body>
@@ -222,6 +233,17 @@
   <div class="eyebrow">Coach GP · 完整轉變藍圖 · 12個月</div>
   <h1>97 → <span>76</span></h1>
   <p class="header-sub">由今日嘅起點,一步一步去到 Glen Powell 體型 — 運動型、線條分明、功能性強。呢個唔係速成,係一條清晰、可持續、唔會令你中途放棄嘅路。</p>
+  <div class="auth-area">
+    <button class="login-btn" id="loginBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.4-1.04 2.58-2.19 3.37v2.8h3.54c2.07-1.9 3.29-4.7 3.29-8.18z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.97 7.28-2.63l-3.54-2.8c-.97.65-2.2 1.04-3.74 1.04-2.88 0-5.31-1.94-6.18-4.56H2.18v2.89C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.82 14.05A6.97 6.97 0 0 1 5.4 12c0-.71.12-1.4.33-2.05V7.06H2.18A11.01 11.01 0 0 0 1 12c0 1.76.42 3.42 1.18 4.89l3.64-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.07.56 4.21 1.64l3.15-3.15C17.46 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.64 2.84C6.69 7.33 9.12 5.38 12 5.38z" fill="#EA4335"/></svg>
+      用 Google 登入以同步記錄
+    </button>
+    <div class="user-chip" id="userChip">
+      <img class="user-avatar" id="userAvatar" src="" alt="">
+      <span class="user-name" id="userName"></span>
+      <button class="logout-btn" id="logoutBtn">登出</button>
+    </div>
+  </div>
 </header>
 
 <!-- ROADMAP -->
@@ -244,8 +266,9 @@
 <!-- ===== PROGRESS TRACKER (REDESIGNED) ===== -->
 <section>
   <div class="section-label">進度追蹤 — 記錄你嘅每一步</div>
-  <div class="storage-warn" id="storageWarn">⚠ 呢個瀏覽器唔支援永久儲存，記錄喺閂頁後會消失。建議每次記錄後用「匯出 JSON」儲存備份。</div>
-  <p class="tracker-intro">每次量度就入返嚟。數據會自動儲存喺呢個裝置,仲會幫你畫圖表睇趨勢。建議每週固定同一日、同一時間（例如朝早起身後）量度。</p>
+  <p class="tracker-intro">每次量度就入返嚟。記錄會即時同步到所有登入緊同一個 Google 帳號嘅設備。建議每週固定同一日、同一時間（例如朝早起身後）量度。</p>
+  <div class="login-gate" id="loginGate">請先用 Google 登入以儲存同同步記錄<br><button class="login-btn" style="margin:20px auto 0; display:inline-flex;" id="loginBtn2">用 Google 登入</button></div>
+  <div id="trackerContent" style="display:none">
 
   <div class="stat-cards" id="statCards">
     <div class="stat-card"><div class="sc-lbl">現時體重</div><div class="sc-val" id="scWeight">—<span class="sc-unit">kg</span></div><div class="sc-delta flat" id="scWeightDelta">未有記錄</div></div>
@@ -323,6 +346,7 @@
       <tbody id="historyBody"><tr><td colspan="8" style="color:var(--gray4); text-align:center; padding:24px;">仲未有記錄</td></tr></tbody>
     </table>
   </div>
+  </div><!-- /trackerContent -->
 </section>
 
 <!-- PHASE 1 MONTHS -->
@@ -410,7 +434,87 @@
   <div class="gp-tag">GP</div>
 </footer>
 
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBxygJGMdJWXtJPoCcDkeOj3YBsOPiOlbk",
+  authDomain: "path-to-gp.firebaseapp.com",
+  projectId: "path-to-gp",
+  storageBucket: "path-to-gp.firebasestorage.app",
+  messagingSenderId: "579243132309",
+  appId: "1:579243132309:web:f27a0a85ecff667b44629c"
+};
+const _fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(_fbApp);
+const db = getFirestore(_fbApp);
+
+const START_WEIGHT = 97, GOAL_WEIGHT = 76, START_BF = 29.5;
+let entries = [], currentUser = null, unsubSnap = null, migrated = false;
+
+function entryDoc(date) { return doc(db, 'users', currentUser.uid, 'entries', date); }
+async function saveEntry(entry) { await setDoc(entryDoc(entry.date), entry); }
+async function deleteEntry(date) { await deleteDoc(entryDoc(date)); }
+
+function startSync(uid) {
+  if (unsubSnap) unsubSnap();
+  unsubSnap = onSnapshot(query(collection(db,'users',uid,'entries'), orderBy('date')), async snap => {
+    entries = snap.docs.map(d => d.data());
+    if (!migrated && snap.empty) { migrated = true; await migrateLocal(); }
+    renderAll();
+  });
+}
+async function migrateLocal() {
+  let local = [];
+  try {
+    const idb = await new Promise((res,rej) => {
+      const r = indexedDB.open('gp_progress_db', 1);
+      r.onupgradeneeded = e => e.target.result.createObjectStore('entries', {keyPath:'date'});
+      r.onsuccess = e => res(e.target.result); r.onerror = rej;
+    });
+    local = await new Promise((res,rej) => {
+      const req = idb.transaction('entries','readonly').objectStore('entries').getAll();
+      req.onsuccess = e => res(e.target.result||[]); req.onerror = rej;
+    });
+  } catch(e) {}
+  if (!local.length) {
+    try { const r = localStorage.getItem('gp_progress_entries'); if (r) local = JSON.parse(r); } catch(e) {}
+  }
+  for (const entry of local) await saveEntry(entry);
+}
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  const chip = document.getElementById('userChip');
+  const loginBtn = document.getElementById('loginBtn');
+  const gate = document.getElementById('loginGate');
+  const content = document.getElementById('trackerContent');
+  if (user) {
+    chip.style.display = 'flex';
+    loginBtn.style.display = 'none';
+    document.getElementById('userAvatar').src = user.photoURL || '';
+    document.getElementById('userName').textContent = user.displayName || user.email;
+    gate.style.display = 'none';
+    content.style.display = 'block';
+    migrated = false;
+    startSync(user.uid);
+  } else {
+    chip.style.display = 'none';
+    loginBtn.style.display = 'flex';
+    gate.style.display = 'block';
+    content.style.display = 'none';
+    if (unsubSnap) { unsubSnap(); unsubSnap = null; }
+    entries = [];
+  }
+});
+
+const doLogin = () => signInWithPopup(auth, new GoogleAuthProvider());
+document.getElementById('loginBtn').onclick = doLogin;
+document.getElementById('loginBtn2').onclick = doLogin;
+document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
   /* ============ MEAL ROTATION DATA ============ */
   const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const SHAKE = {t:'宵夜', n:'蛋白奶昔', m:'~120 · P25g'};
@@ -508,51 +612,6 @@
   }
 
   /* ============ PROGRESS TRACKER ============ */
-  const START_WEIGHT = 97, GOAL_WEIGHT = 76, START_BF = 29.5;
-  const LS_KEY = 'gp_progress_entries';
-  let entries = [], _db = null;
-
-  function _openDB() {
-    return new Promise((res, rej) => {
-      const r = indexedDB.open('gp_progress_db', 1);
-      r.onupgradeneeded = e => e.target.result.createObjectStore('entries', {keyPath:'date'});
-      r.onsuccess = e => { _db = e.target.result; res(); };
-      r.onerror = rej;
-    });
-  }
-  async function loadEntries() {
-    try {
-      await _openDB();
-      entries = await new Promise((res, rej) => {
-        const req = _db.transaction('entries','readonly').objectStore('entries').getAll();
-        req.onsuccess = e => res(e.target.result || []);
-        req.onerror = rej;
-      });
-      entries.sort((a,b) => a.date.localeCompare(b.date));
-      // one-time migration from localStorage
-      if (!entries.length) {
-        try {
-          const raw = localStorage.getItem(LS_KEY);
-          if (raw) { entries = JSON.parse(raw); await saveEntries(); localStorage.removeItem(LS_KEY); }
-        } catch(e) {}
-      }
-    } catch(e) {
-      // IndexedDB unavailable, fall back to localStorage
-      try { const raw = localStorage.getItem(LS_KEY); entries = raw ? JSON.parse(raw) : []; } catch(e2) { entries = []; }
-      entries.sort((a,b) => a.date.localeCompare(b.date));
-      document.getElementById('storageWarn').style.display = 'block';
-    }
-  }
-  async function saveEntries() {
-    if (_db) {
-      const tx = _db.transaction('entries','readwrite'), store = tx.objectStore('entries');
-      store.clear();
-      entries.forEach(e => store.put(e));
-      await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-    } else {
-      try { localStorage.setItem(LS_KEY, JSON.stringify(entries)); } catch(e) {}
-    }
-  }
   function fmt(n){ return (n===null||n===undefined||n==='')?'—':n; }
 
   function renderStats() {
@@ -585,7 +644,7 @@
       '</td><td class="hide-mobile">'+fmt(e.arm)+'</td><td class="hide-mobile">'+fmt(e.thigh)+
       '</td><td><button class="del-btn" data-date="'+e.date+'">✕</button></td></tr>'
     ).join('');
-    body.querySelectorAll('.del-btn').forEach(b=>{ b.onclick=async ()=>{ entries=entries.filter(x=>x.date!==b.dataset.date); await saveEntries(); renderAll(); }; });
+    body.querySelectorAll('.del-btn').forEach(b=>{ b.onclick=async ()=>{ await deleteEntry(b.dataset.date); }; });
   }
 
   function drawChart(canvasId, emptyId, getVal, color, startVal) {
@@ -629,19 +688,17 @@
     if(!date||isNaN(weight)){ msg.style.color='#ff8fa3'; msg.textContent='請最少填日期同體重'; return; }
     const get=id=>{const v=document.getElementById(id).value; return v===''?null:parseFloat(v);};
     const entry={date,weight,bf:get('inBf'),waist:get('inWaist'),chest:get('inChest'),arm:get('inArm'),thigh:get('inThigh')};
-    entries=entries.filter(e=>e.date!==date); entries.push(entry); entries.sort((a,b)=>a.date.localeCompare(b.date));
-    await saveEntries();
+    await saveEntry(entry);
     msg.style.color='#d4ff00';
     msg.textContent='✓ 已儲存！繼續努力 💪';
     ['inWeight','inBf','inWaist','inChest','inArm','inThigh'].forEach(id=>document.getElementById(id).value='');
-    renderAll(); setTimeout(()=>msg.textContent='',4000);
+    setTimeout(()=>msg.textContent='',4000);
   };
 
   // init
   document.getElementById('inDate').value=new Date().toISOString().slice(0,10);
   window.addEventListener('resize', renderCharts);
   buildMeals();
-  loadEntries().then(renderAll);
 
   document.getElementById('exportBtn').onclick = () => {
     if (!entries.length) { alert('仲未有記錄可以匯出'); return; }
@@ -656,10 +713,9 @@
       try {
         const data = JSON.parse(ev.target.result);
         if (!Array.isArray(data)) throw 0;
-        entries = data.filter(r => r.date && !isNaN(+r.weight));
-        entries.sort((a,b)=>a.date.localeCompare(b.date));
-        await saveEntries(); renderAll();
-        alert('✓ 匯入成功！共 ' + entries.length + ' 條記錄');
+        const valid = data.filter(r => r.date && !isNaN(+r.weight));
+        for (const entry of valid) await saveEntry(entry);
+        alert('✓ 匯入成功！共 ' + valid.length + ' 條記錄');
       } catch(err) { alert('檔案格式有誤，請匯入正確嘅 JSON 檔案'); }
     };
     reader.readAsText(file);
