@@ -1,1822 +1,619 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coach GP — 完整藍圖 + 進度追蹤</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --black: #0a0a0a;
-      --white: #f5f4f0;
-      --accent: #d4ff00;
-      --gray1: #161616;
-      --gray2: #262626;
-      --gray3: #444;
-      --gray4: #888;
-      --gray5: #bbb;
-      --blue: #7eb8ff;
-      --orange: #ffb347;
-      --pink: #ff8fa3;
-      --font-display: 'Bebas Neue', sans-serif;
-      --font-body: 'DM Sans', sans-serif;
-      --font-mono: 'DM Mono', monospace;
-    }
-
-    html {
-      font-size: 14px;
-    }
-
-    body {
-      background: var(--black);
-      color: var(--white);
-      font-family: var(--font-body);
-      line-height: 1.5;
-    }
-
-    header {
-      padding: 48px 40px 32px;
-      border-bottom: 1px solid var(--gray2);
-    }
-
-    .eyebrow {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-
-    header h1 {
-      font-family: var(--font-display);
-      font-size: clamp(48px, 8vw, 96px);
-      letter-spacing: 2px;
-      line-height: .95;
-    }
-
-    header h1 span {
-      color: var(--accent);
-    }
-
-    .header-sub {
-      font-size: 13px;
-      color: var(--gray5);
-      max-width: 560px;
-      margin-top: 14px;
-      line-height: 1.6;
-    }
-
-    .section-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--gray2);
-    }
-
-    section {
-      padding: 40px;
-      border-bottom: 1px solid var(--gray2);
-    }
-
-    @media (max-width:760px) {
-
-      section,
-      header {
-        padding: 28px 18px;
-      }
-    }
-
-    /* ROADMAP */
-    .roadmap {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0;
-    }
-
-    @media (max-width:880px) {
-      .roadmap {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-    }
-
-    @media (max-width:480px) {
-      .roadmap {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .phase {
-      padding: 0 18px;
-      border-left: 1px solid var(--gray2);
-    }
-
-    .phase:first-child {
-      border-left: none;
-      padding-left: 0;
-    }
-
-    @media (max-width:880px) {
-      .phase {
-        border-left: none;
-        padding-left: 0;
-      }
-    }
-
-    .phase-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--gray3);
-      margin-bottom: 16px;
-    }
-
-    .phase.active .phase-dot {
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(212, 255, 0, .15);
-    }
-
-    .phase.goal .phase-dot {
-      background: var(--accent);
-    }
-
-    .phase-time {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: var(--gray4);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .phase-name {
-      font-family: var(--font-display);
-      font-size: 26px;
-      line-height: 1;
-      margin-bottom: 12px;
-    }
-
-    .phase.active .phase-name,
-    .phase.goal .phase-name {
-      color: var(--accent);
-    }
-
-    .phase-weight {
-      font-size: 12px;
-      color: var(--gray5);
-      margin-bottom: 4px;
-    }
-
-    .phase-weight b {
-      color: var(--white);
-      font-weight: 600;
-    }
-
-    .phase-bf {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-
-    .phase-task {
-      font-size: 11px;
-      color: var(--gray5);
-      line-height: 1.5;
-      padding-top: 12px;
-      border-top: 1px solid var(--gray2);
-    }
-
-    .big-progress {
-      margin-top: 36px;
-      background: var(--gray1);
-      border-radius: 6px;
-      padding: 22px 26px;
-      border: 1px solid var(--gray2);
-    }
-
-    .bp-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .bp-labels span {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--gray4);
-    }
-
-    .bp-track {
-      height: 8px;
-      background: var(--gray2);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .bp-fill {
-      height: 100%;
-      width: 4%;
-      background: linear-gradient(90deg, var(--orange), var(--accent));
-      border-radius: 4px;
-      transition: width .6s;
-    }
-
-    .bp-caption {
-      font-size: 11px;
-      color: var(--gray4);
-      margin-top: 12px;
-    }
-
-    .bp-caption b {
-      color: var(--accent);
-    }
-
-    /* ===== TRACKER (REDESIGNED) ===== */
-    .tracker-intro {
-      font-size: 13px;
-      color: var(--gray5);
-      margin-bottom: 28px;
-      max-width: 620px;
-    }
-
-    .stat-cards {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-
-    @media (max-width:760px) {
-      .stat-cards {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .stat-card {
-      background: var(--gray1);
-      border: 1px solid var(--gray2);
-      border-radius: 8px;
-      padding: 18px;
-    }
-
-    .stat-card .sc-lbl {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      margin-bottom: 8px;
-    }
-
-    .stat-card .sc-val {
-      font-family: var(--font-display);
-      font-size: 38px;
-      line-height: 1;
-      color: var(--accent);
-    }
-
-    .stat-card .sc-unit {
-      font-size: 13px;
-      color: var(--gray4);
-      margin-left: 4px;
-    }
-
-    .stat-card .sc-delta {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      margin-top: 6px;
-    }
-
-    .sc-delta.down {
-      color: var(--accent);
-    }
-
-    .sc-delta.up {
-      color: var(--pink);
-    }
-
-    .sc-delta.flat {
-      color: var(--gray4);
-    }
-
-    .tracker-grid {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (max-width:880px) {
-      .tracker-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* —— redesigned form —— */
-    .entry-form {
-      background: linear-gradient(160deg, #1c1c1c, #131313);
-      border: 1px solid var(--gray2);
-      border-radius: 12px;
-      padding: 26px;
-    }
-
-    .form-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .form-title {
-      font-family: var(--font-display);
-      font-size: 26px;
-      color: var(--white);
-      letter-spacing: 1px;
-    }
-
-    .form-badge {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 1px;
-      color: var(--accent);
-      border: 1px solid rgba(212, 255, 0, .3);
-      border-radius: 20px;
-      padding: 4px 10px;
-    }
-
-    .field-group-label {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      margin: 18px 0 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .field-group-label:first-of-type {
-      margin-top: 0;
-    }
-
-    .field-group-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--gray2);
-    }
-
-    /* big primary inputs (date, weight) */
-    .primary-field {
-      margin-bottom: 14px;
-    }
-
-    .primary-field label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--gray5);
-      margin-bottom: 7px;
-    }
-
-    .input-shell {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: var(--black);
-      border: 1.5px solid var(--gray2);
-      border-radius: 10px;
-      transition: border-color .2s, box-shadow .2s;
-    }
-
-    .input-shell:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(212, 255, 0, .12);
-    }
-
-    .input-shell input {
-      flex: 1;
-      width: 100%;
-      background: transparent;
-      border: none;
-      padding: 14px 16px;
-      color: var(--white);
-      font-family: var(--font-body);
-      font-size: 18px;
-      font-weight: 500;
-    }
-
-    .input-shell input:focus {
-      outline: none;
-    }
-
-    .input-shell .unit-tag {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--gray4);
-      padding-right: 16px;
-    }
-
-    .input-shell.big input {
-      font-size: 24px;
-      font-family: var(--font-display);
-      letter-spacing: 1px;
-    }
-
-    /* stepper buttons for weight */
-    .stepper {
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid var(--gray2);
-    }
-
-    .stepper button {
-      background: transparent;
-      border: none;
-      color: var(--gray4);
-      cursor: pointer;
-      padding: 0 14px;
-      font-size: 13px;
-      line-height: 1;
-      height: 50%;
-      transition: color .15s, background .15s;
-    }
-
-    .stepper button:hover {
-      color: var(--accent);
-      background: rgba(212, 255, 0, .06);
-    }
-
-    .stepper button:first-child {
-      border-bottom: 1px solid var(--gray2);
-      border-radius: 0 10px 0 0;
-    }
-
-    .stepper button:last-child {
-      border-radius: 0 0 10px 0;
-    }
-
-    /* secondary measurement inputs as compact pills grid */
-    .measure-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .measure-field label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      margin-bottom: 5px;
-    }
-
-    .measure-field .input-shell input {
-      font-size: 15px;
-      padding: 10px 12px;
-    }
-
-    .measure-field .input-shell .unit-tag {
-      font-size: 10px;
-      padding-right: 12px;
-    }
-
-    .btn {
-      width: 100%;
-      background: var(--accent);
-      color: var(--black);
-      border: none;
-      border-radius: 10px;
-      padding: 15px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: transform .12s, box-shadow .2s;
-    }
-
-    .btn:hover {
-      box-shadow: 0 6px 20px rgba(212, 255, 0, .25);
-      transform: translateY(-1px);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .form-msg {
-      font-size: 12px;
-      margin-top: 12px;
-      min-height: 16px;
-      font-family: var(--font-mono);
-      text-align: center;
-      transition: opacity .3s;
-    }
-
-    .chart-area {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .chart-box {
-      background: var(--gray1);
-      border: 1px solid var(--gray2);
-      border-radius: 12px;
-      padding: 20px;
-    }
-
-    .chart-box h3 {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .chart-box h3 .latest {
-      color: var(--accent);
-    }
-
-    .chart-box canvas {
-      width: 100%;
-      height: 190px;
-      display: block;
-    }
-
-    .empty-state {
-      color: var(--gray4);
-      font-size: 12px;
-      text-align: center;
-      padding: 46px 20px;
-      font-family: var(--font-mono);
-      line-height: 1.6;
-    }
-
-    .history-wrap {
-      margin-top: 24px;
-      background: var(--gray1);
-      border: 1px solid var(--gray2);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .history-wrap h3 {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      padding: 18px 20px 12px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      text-align: left;
-      padding: 12px 14px;
-      font-size: 12px;
-      border-top: 1px solid var(--gray2);
-    }
-
-    th {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--gray4);
-    }
-
-    td {
-      color: var(--gray5);
-    }
-
-    td.date {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--white);
-    }
-
-    td.weight {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    tbody tr {
-      transition: background .15s;
-    }
-
-    tbody tr:hover {
-      background: rgba(255, 255, 255, .02);
-    }
-
-    .del-btn {
-      background: none;
-      border: none;
-      color: var(--gray3);
-      cursor: pointer;
-      font-size: 15px;
-      line-height: 1;
-      padding: 4px;
-      border-radius: 4px;
-      transition: color .15s, background .15s;
-    }
-
-    .del-btn:hover {
-      color: var(--pink);
-      background: rgba(255, 143, 163, .1);
-    }
-
-    @media (max-width:600px) {
-      .hide-mobile {
-        display: none;
-      }
-    }
-
-    /* MACROS */
-    .macro-strip {
-      display: flex;
-      gap: 0;
-      flex-wrap: wrap;
-    }
-
-    .macro-item {
-      flex: 1;
-      min-width: 110px;
-      padding: 0 24px 0 0;
-      border-right: 1px solid var(--gray2);
-    }
-
-    .macro-item:last-child {
-      border-right: none;
-    }
-
-    .m-val {
-      font-family: var(--font-display);
-      font-size: 40px;
-      line-height: 1;
-    }
-
-    .m-val.kcal {
-      color: var(--accent);
-    }
-
-    .m-val.prot {
-      color: var(--blue);
-    }
-
-    .m-val.carb {
-      color: var(--orange);
-    }
-
-    .m-val.fat {
-      color: var(--pink);
-    }
-
-    .m-lbl {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--gray4);
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    /* MONTHS */
-    .month-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    @media (max-width:880px) {
-      .month-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width:480px) {
-      .month-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .month-card {
-      background: var(--gray1);
-      border: 1px solid var(--gray2);
-      border-radius: 6px;
-      padding: 20px;
-    }
-
-    .month-card.m1 {
-      border-color: var(--accent);
-    }
-
-    .month-tag {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--gray4);
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .month-title {
-      font-family: var(--font-display);
-      font-size: 22px;
-      margin-bottom: 14px;
-    }
-
-    .month-card.m1 .month-title {
-      color: var(--accent);
-    }
-
-    .month-list {
-      list-style: none;
-    }
-
-    .month-list li {
-      font-size: 11px;
-      color: var(--gray5);
-      padding: 5px 0;
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-    }
-
-    .month-list li::before {
-      content: '→';
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .month-target {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--gray2);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--accent);
-    }
-
-    /* TRAINING */
-    .week-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-    }
-
-    @media (max-width:1000px) {
-      .week-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-
-    @media (max-width:600px) {
-      .week-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .day-card {
-      background: var(--gray1);
-      border: 1px solid var(--gray2);
-      border-radius: 4px;
-      padding: 14px;
-    }
-
-    .day-card.rest {
-      border-style: dashed;
-    }
-
-    .day-num {
-      font-family: var(--font-display);
-      font-size: 36px;
-      line-height: 1;
-      color: var(--gray3);
-    }
-
-    .day-name {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      margin-bottom: 8px;
-    }
-
-    .day-type {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 2px;
-      margin-bottom: 10px;
-    }
-
-    .tag-strength {
-      background: rgba(212, 255, 0, .12);
-      color: var(--accent);
-    }
-
-    .tag-cardio {
-      background: rgba(255, 179, 71, .12);
-      color: var(--orange);
-    }
-
-    .tag-rest {
-      background: rgba(136, 136, 136, .1);
-      color: var(--gray4);
-    }
-
-    .day-focus {
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .day-moves {
-      list-style: none;
-    }
-
-    .day-moves li {
-      font-size: 11px;
-      color: var(--gray5);
-      padding: 3px 0;
-      border-bottom: 1px solid var(--gray2);
-      display: flex;
-      justify-content: space-between;
-      gap: 4px;
-    }
-
-    .day-moves li:last-child {
-      border-bottom: none;
-    }
-
-    .day-moves li span {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--gray4);
-      white-space: nowrap;
-    }
-
-    .week-note {
-      font-size: 11px;
-      color: var(--gray4);
-      margin-top: 16px;
-      font-style: italic;
-    }
-
-    .week-note b {
-      color: var(--accent);
-      font-style: normal;
-    }
-
-    /* ===== MEAL ROTATION (6 weeks) ===== */
-    .week-tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-
-    .week-tab {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 1px;
-      padding: 9px 16px;
-      border-radius: 24px;
-      border: 1px solid var(--gray2);
-      background: var(--gray1);
-      color: var(--gray4);
-      cursor: pointer;
-      transition: all .18s;
-    }
-
-    .week-tab:hover {
-      border-color: var(--gray3);
-      color: var(--gray5); 
-    }
-
-    .week-tab.active {
-      background: var(--accent);
-      color: var(--black);
-      border-color: var(--accent);
-      font-weight: 500;
-    }
-
-    .week-theme {
-      font-size: 13px;
-      color: var(--gray5);
-      margin-bottom: 18px;
-    }
-
-    .week-theme b {
-      color: var(--accent);
-    }
-
-    .meal-panel {
-      display: none;
-    }
-
-    .meal-panel.active {
-      display: block;
-      animation: fade .3s;
-    }
-
-    @keyframes fade {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-
-      to {
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    .meal-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-    }
-
-    @media (max-width:1000px) {
-      .meal-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-
-    @media (max-width:600px) {
-      .meal-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .meal-day {
-      background: var(--gray1);
-      border: 1px solid var(--gray2);
-      border-radius: 4px;
-      padding: 13px;
-    }
-
-    .meal-day.free {
-      border-style: dashed;
-      border-color: var(--gray3);
-    }
-
-    .meal-day-hdr {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--gray4);
-      margin-bottom: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--gray2);
-    }
-
-    .meal-slot {
-      margin-bottom: 9px;
-    }
-
-    .meal-slot:last-child {
-      margin-bottom: 0;
-    }
-
-    .meal-time {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      color: var(--accent);
-      letter-spacing: .5px;
-    }
-
-    .meal-name {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--white);
-      line-height: 1.3;
-    }
-
-    .meal-macros {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      color: var(--gray4);
-      margin-top: 1px;
-    }
-
-    .home-badge {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 8px;
-      color: var(--accent);
-      border: 1px solid rgba(212, 255, 0, .3);
-      border-radius: 2px;
-      padding: 0 4px;
-      margin-left: 4px;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-    }
-
-    @media (max-width:760px) {
-      .two-col {
-        grid-template-columns: 1fr;
-        gap: 28px;
-      }
-    }
-
-    .panel {
-      background: var(--gray1);
-      border: 1px solid var(--gray2);
-      border-radius: 6px;
-      padding: 24px;
-    }
-
-    .rule-item {
-      display: flex;
-      gap: 14px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--gray2);
-    }
-
-    .rule-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .rule-num {
-      font-family: var(--font-display);
-      font-size: 30px;
-      color: var(--gray3);
-      line-height: 1;
-      min-width: 28px;
-    }
-
-    .rule-text strong {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .rule-text p {
-      font-size: 11px;
-      color: var(--gray5);
-      line-height: 1.5;
-    }
-
-    .staple-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 9px 0;
-      border-bottom: 1px solid var(--gray2);
-      font-size: 12px;
-    }
-
-    .staple-row:last-child {
-      border-bottom: none;
-    }
-
-    .staple-row .s-name {
-      color: var(--white);
-    }
-
-    .staple-row .s-info {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--gray4);
-    }
-
-    .staple-cat {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin: 16px 0 4px;
-    }
-
-    .staple-cat:first-child {
-      margin-top: 0;
-    }
-
-    footer {
-      padding: 18px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    footer p {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--gray4);
-      letter-spacing: 1.5px;
-    }
-
-    .gp-tag {
-      font-family: var(--font-display);
-      font-size: 20px;
-      color: var(--accent);
-      letter-spacing: 2px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach GP — 完整藍圖 + 進度追蹤</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black:#0a0a0a; --white:#f5f4f0; --accent:#d4ff00; --gray1:#161616; --gray2:#262626;
+    --gray3:#444; --gray4:#888; --gray5:#bbb; --blue:#7eb8ff; --orange:#ffb347; --pink:#ff8fa3;
+    --font-display:'Bebas Neue',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'DM Mono',monospace;
+  }
+  html { font-size:14px; }
+  body { background:var(--black); color:var(--white); font-family:var(--font-body); line-height:1.5; }
+
+  header { padding:48px 40px 32px; border-bottom:1px solid var(--gray2); }
+  .eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+  header h1 { font-family:var(--font-display); font-size:clamp(48px,8vw,96px); letter-spacing:2px; line-height:.95; }
+  header h1 span { color:var(--accent); }
+  .header-sub { font-size:13px; color:var(--gray5); max-width:560px; margin-top:14px; line-height:1.6; }
+
+  .section-label { font-family:var(--font-mono); font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--gray4); margin-bottom:24px; display:flex; align-items:center; gap:12px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--gray2); }
+  section { padding:40px; border-bottom:1px solid var(--gray2); }
+  @media (max-width:760px){ section,header{ padding:28px 18px; } }
+
+  /* ROADMAP */
+  .roadmap { display:grid; grid-template-columns:repeat(5,1fr); gap:0; }
+  @media (max-width:880px){ .roadmap{ grid-template-columns:1fr 1fr; gap:12px; } }
+  @media (max-width:480px){ .roadmap{ grid-template-columns:1fr; } }
+  .phase { padding:0 18px; border-left:1px solid var(--gray2); }
+  .phase:first-child { border-left:none; padding-left:0; }
+  @media (max-width:880px){ .phase{ border-left:none; padding-left:0; } }
+  .phase-dot { width:12px; height:12px; border-radius:50%; background:var(--gray3); margin-bottom:16px; }
+  .phase.active .phase-dot { background:var(--accent); box-shadow:0 0 0 4px rgba(212,255,0,.15); }
+  .phase.goal .phase-dot { background:var(--accent); }
+  .phase-time { font-family:var(--font-mono); font-size:10px; letter-spacing:1px; color:var(--gray4); text-transform:uppercase; margin-bottom:6px; }
+  .phase-name { font-family:var(--font-display); font-size:26px; line-height:1; margin-bottom:12px; }
+  .phase.active .phase-name,.phase.goal .phase-name { color:var(--accent); }
+  .phase-weight { font-size:12px; color:var(--gray5); margin-bottom:4px; }
+  .phase-weight b { color:var(--white); font-weight:600; }
+  .phase-bf { font-family:var(--font-mono); font-size:11px; color:var(--accent); margin-bottom:12px; }
+  .phase-task { font-size:11px; color:var(--gray5); line-height:1.5; padding-top:12px; border-top:1px solid var(--gray2); }
+
+  .big-progress { margin-top:36px; background:var(--gray1); border-radius:6px; padding:22px 26px; border:1px solid var(--gray2); }
+  .bp-labels { display:flex; justify-content:space-between; margin-bottom:10px; }
+  .bp-labels span { font-family:var(--font-mono); font-size:10px; color:var(--gray4); }
+  .bp-track { height:8px; background:var(--gray2); border-radius:4px; overflow:hidden; position:relative; }
+  .bp-fill { height:100%; width:4%; background:linear-gradient(90deg,var(--orange),var(--accent)); border-radius:4px; transition:width .6s; }
+  .bp-caption { font-size:11px; color:var(--gray4); margin-top:12px; }
+  .bp-caption b { color:var(--accent); }
+
+  /* ===== TRACKER (REDESIGNED) ===== */
+  .tracker-intro { font-size:13px; color:var(--gray5); margin-bottom:28px; max-width:620px; }
+
+  .stat-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+  @media (max-width:760px){ .stat-cards{ grid-template-columns:1fr 1fr; } }
+  .stat-card { background:var(--gray1); border:1px solid var(--gray2); border-radius:8px; padding:18px; }
+  .stat-card .sc-lbl { font-family:var(--font-mono); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gray4); margin-bottom:8px; }
+  .stat-card .sc-val { font-family:var(--font-display); font-size:38px; line-height:1; color:var(--accent); }
+  .stat-card .sc-unit { font-size:13px; color:var(--gray4); margin-left:4px; }
+  .stat-card .sc-delta { font-family:var(--font-mono); font-size:11px; margin-top:6px; }
+  .sc-delta.down { color:var(--accent); } .sc-delta.up { color:var(--pink); } .sc-delta.flat { color:var(--gray4); }
+
+  .tracker-grid { display:grid; grid-template-columns:380px 1fr; gap:24px; align-items:start; }
+  @media (max-width:880px){ .tracker-grid{ grid-template-columns:1fr; } }
+
+  /* —— redesigned form —— */
+  .entry-form { background:linear-gradient(160deg,#1c1c1c,#131313); border:1px solid var(--gray2); border-radius:12px; padding:26px; }
+  .form-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .form-title { font-family:var(--font-display); font-size:26px; color:var(--white); letter-spacing:1px; }
+  .form-badge { font-family:var(--font-mono); font-size:9px; letter-spacing:1px; color:var(--accent); border:1px solid rgba(212,255,0,.3); border-radius:20px; padding:4px 10px; }
+
+  .field-group-label { font-family:var(--font-mono); font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--gray4); margin:18px 0 10px; display:flex; align-items:center; gap:8px; }
+  .field-group-label:first-of-type { margin-top:0; }
+  .field-group-label::after { content:''; flex:1; height:1px; background:var(--gray2); }
+
+  /* big primary inputs (date, weight) */
+  .primary-field { margin-bottom:14px; }
+  .primary-field label { display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gray5); margin-bottom:7px; }
+  .input-shell { position:relative; display:flex; align-items:center; background:var(--black); border:1.5px solid var(--gray2); border-radius:10px; transition:border-color .2s, box-shadow .2s; }
+  .input-shell:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px rgba(212,255,0,.12); }
+  .input-shell input { flex:1; width:100%; background:transparent; border:none; padding:14px 16px; color:var(--white); font-family:var(--font-body); font-size:18px; font-weight:500; }
+  .input-shell input:focus { outline:none; }
+  .input-shell .unit-tag { font-family:var(--font-mono); font-size:12px; color:var(--gray4); padding-right:16px; }
+  .input-shell.big input { font-size:24px; font-family:var(--font-display); letter-spacing:1px; }
+
+  /* stepper buttons for weight */
+  .stepper { display:flex; flex-direction:column; border-left:1px solid var(--gray2); }
+  .stepper button { background:transparent; border:none; color:var(--gray4); cursor:pointer; padding:0 14px; font-size:13px; line-height:1; height:50%; transition:color .15s, background .15s; }
+  .stepper button:hover { color:var(--accent); background:rgba(212,255,0,.06); }
+  .stepper button:first-child { border-bottom:1px solid var(--gray2); border-radius:0 10px 0 0; }
+  .stepper button:last-child { border-radius:0 0 10px 0; }
+
+  /* secondary measurement inputs as compact pills grid */
+  .measure-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .measure-field label { display:block; font-family:var(--font-mono); font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--gray4); margin-bottom:5px; }
+  .measure-field .input-shell input { font-size:15px; padding:10px 12px; }
+  .measure-field .input-shell .unit-tag { font-size:10px; padding-right:12px; }
+
+  .btn { width:100%; background:var(--accent); color:var(--black); border:none; border-radius:10px; padding:15px; font-family:var(--font-mono); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:500; cursor:pointer; margin-top:20px; transition:transform .12s, box-shadow .2s; }
+  .btn:hover { box-shadow:0 6px 20px rgba(212,255,0,.25); transform:translateY(-1px); }
+  .btn:active { transform:translateY(0); }
+  .form-msg { font-size:12px; margin-top:12px; min-height:16px; font-family:var(--font-mono); text-align:center; transition:opacity .3s; }
+
+  .chart-area { display:flex; flex-direction:column; gap:16px; }
+  .chart-box { background:var(--gray1); border:1px solid var(--gray2); border-radius:12px; padding:20px; }
+  .chart-box h3 { font-family:var(--font-mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gray4); margin-bottom:16px; display:flex; justify-content:space-between; }
+  .chart-box h3 .latest { color:var(--accent); }
+  .chart-box canvas { width:100%; height:190px; display:block; }
+  .empty-state { color:var(--gray4); font-size:12px; text-align:center; padding:46px 20px; font-family:var(--font-mono); line-height:1.6; }
+
+  .history-wrap { margin-top:24px; background:var(--gray1); border:1px solid var(--gray2); border-radius:12px; overflow:hidden; }
+  .history-wrap h3 { font-family:var(--font-mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gray4); padding:18px 20px 12px; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { text-align:left; padding:12px 14px; font-size:12px; border-top:1px solid var(--gray2); }
+  th { font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gray4); }
+  td { color:var(--gray5); }
+  td.date { font-family:var(--font-mono); font-size:11px; color:var(--white); }
+  td.weight { color:var(--accent); font-weight:600; }
+  tbody tr { transition:background .15s; }
+  tbody tr:hover { background:rgba(255,255,255,.02); }
+  .del-btn { background:none; border:none; color:var(--gray3); cursor:pointer; font-size:15px; line-height:1; padding:4px; border-radius:4px; transition:color .15s, background .15s; }
+  .del-btn:hover { color:var(--pink); background:rgba(255,143,163,.1); }
+  @media (max-width:600px){ .hide-mobile{ display:none; } }
+
+  /* MACROS */
+  .macro-strip { display:flex; gap:0; flex-wrap:wrap; }
+  .macro-item { flex:1; min-width:110px; padding:0 24px 0 0; border-right:1px solid var(--gray2); }
+  .macro-item:last-child { border-right:none; }
+  .m-val { font-family:var(--font-display); font-size:40px; line-height:1; }
+  .m-val.kcal{color:var(--accent);} .m-val.prot{color:var(--blue);} .m-val.carb{color:var(--orange);} .m-val.fat{color:var(--pink);}
+  .m-lbl { font-family:var(--font-mono); font-size:10px; letter-spacing:2px; color:var(--gray4); text-transform:uppercase; margin-top:2px; }
+
+  /* MONTHS */
+  .month-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  @media (max-width:880px){ .month-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:480px){ .month-grid{ grid-template-columns:1fr; } }
+  .month-card { background:var(--gray1); border:1px solid var(--gray2); border-radius:6px; padding:20px; }
+  .month-card.m1 { border-color:var(--accent); }
+  .month-tag { font-family:var(--font-mono); font-size:10px; letter-spacing:2px; color:var(--gray4); text-transform:uppercase; margin-bottom:4px; }
+  .month-title { font-family:var(--font-display); font-size:22px; margin-bottom:14px; }
+  .month-card.m1 .month-title { color:var(--accent); }
+  .month-list { list-style:none; }
+  .month-list li { font-size:11px; color:var(--gray5); padding:5px 0; display:flex; gap:8px; align-items:flex-start; }
+  .month-list li::before { content:'→'; color:var(--accent); flex-shrink:0; }
+  .month-target { margin-top:12px; padding-top:12px; border-top:1px solid var(--gray2); font-family:var(--font-mono); font-size:11px; color:var(--accent); }
+
+  /* TRAINING */
+  .week-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+  @media (max-width:1000px){ .week-grid{ grid-template-columns:repeat(4,1fr); } }
+  @media (max-width:600px){ .week-grid{ grid-template-columns:repeat(2,1fr); } }
+  .day-card { background:var(--gray1); border:1px solid var(--gray2); border-radius:4px; padding:14px; }
+  .day-card.rest { border-style:dashed; }
+  .day-num { font-family:var(--font-display); font-size:36px; line-height:1; color:var(--gray3); }
+  .day-name { font-family:var(--font-mono); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gray4); margin-bottom:8px; }
+  .day-type { display:inline-block; font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; padding:3px 8px; border-radius:2px; margin-bottom:10px; }
+  .tag-strength{ background:rgba(212,255,0,.12); color:var(--accent); }
+  .tag-cardio{ background:rgba(255,179,71,.12); color:var(--orange); }
+  .tag-rest{ background:rgba(136,136,136,.1); color:var(--gray4); }
+  .day-focus { font-size:12px; font-weight:600; margin-bottom:8px; }
+  .day-moves { list-style:none; }
+  .day-moves li { font-size:11px; color:var(--gray5); padding:3px 0; border-bottom:1px solid var(--gray2); display:flex; justify-content:space-between; gap:4px; }
+  .day-moves li:last-child { border-bottom:none; }
+  .day-moves li span { font-family:var(--font-mono); font-size:10px; color:var(--gray4); white-space:nowrap; }
+  .week-note { font-size:11px; color:var(--gray4); margin-top:16px; font-style:italic; }
+  .week-note b { color:var(--accent); font-style:normal; }
+
+  /* ===== MEAL ROTATION (6 weeks) ===== */
+  .week-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+  .week-tab { font-family:var(--font-mono); font-size:11px; letter-spacing:1px; padding:9px 16px; border-radius:24px; border:1px solid var(--gray2); background:var(--gray1); color:var(--gray4); cursor:pointer; transition:all .18s; }
+  .week-tab:hover { border-color:var(--gray3); color:var(--gray5); }
+  .week-tab.active { background:var(--accent); color:var(--black); border-color:var(--accent); font-weight:500; }
+  .week-theme { font-size:13px; color:var(--gray5); margin-bottom:18px; }
+  .week-theme b { color:var(--accent); }
+  .meal-panel { display:none; }
+  .meal-panel.active { display:block; animation:fade .3s; }
+  @keyframes fade { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  .meal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+  @media (max-width:1000px){ .meal-grid{ grid-template-columns:repeat(4,1fr); } }
+  @media (max-width:600px){ .meal-grid{ grid-template-columns:repeat(2,1fr); } }
+  .meal-day { background:var(--gray1); border:1px solid var(--gray2); border-radius:4px; padding:13px; }
+  .meal-day.free { border-style:dashed; border-color:var(--gray3); }
+  .meal-day-hdr { font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gray4); margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid var(--gray2); }
+  .meal-slot { margin-bottom:9px; } .meal-slot:last-child { margin-bottom:0; }
+  .meal-time { font-family:var(--font-mono); font-size:9px; color:var(--accent); letter-spacing:.5px; }
+  .meal-name { font-size:11px; font-weight:500; color:var(--white); line-height:1.3; }
+  .meal-macros { font-family:var(--font-mono); font-size:9px; color:var(--gray4); margin-top:1px; }
+  .home-badge { display:inline-block; font-family:var(--font-mono); font-size:8px; color:var(--accent); border:1px solid rgba(212,255,0,.3); border-radius:2px; padding:0 4px; margin-left:4px; }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+  @media (max-width:760px){ .two-col{ grid-template-columns:1fr; gap:28px; } }
+  .panel { background:var(--gray1); border:1px solid var(--gray2); border-radius:6px; padding:24px; }
+  .rule-item { display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--gray2); }
+  .rule-item:last-child { border-bottom:none; padding-bottom:0; }
+  .rule-num { font-family:var(--font-display); font-size:30px; color:var(--gray3); line-height:1; min-width:28px; }
+  .rule-text strong { display:block; font-size:13px; font-weight:600; margin-bottom:2px; }
+  .rule-text p { font-size:11px; color:var(--gray5); line-height:1.5; }
+  .staple-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--gray2); font-size:12px; }
+  .staple-row:last-child { border-bottom:none; }
+  .staple-row .s-name { color:var(--white); }
+  .staple-row .s-info { font-family:var(--font-mono); font-size:10px; color:var(--gray4); }
+  .staple-cat { font-family:var(--font-mono); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin:16px 0 4px; }
+  .staple-cat:first-child { margin-top:0; }
+
+  footer { padding:18px 40px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  footer p { font-family:var(--font-mono); font-size:10px; color:var(--gray4); letter-spacing:1.5px; }
+  .gp-tag { font-family:var(--font-display); font-size:20px; color:var(--accent); letter-spacing:2px; }
+</style>
 </head>
-
 <body>
 
-  <header>
-    <div class="eyebrow">Coach GP · 完整轉變藍圖 · 12個月</div>
-    <h1>97 → <span>76</span></h1>
-    <p class="header-sub">由今日嘅起點,一步一步去到 Glen Powell 體型 — 運動型、線條分明、功能性強。呢個唔係速成,係一條清晰、可持續、唔會令你中途放棄嘅路。</p>
-  </header>
+<header>
+  <div class="eyebrow">Coach GP · 完整轉變藍圖 · 12個月</div>
+  <h1>97 → <span>76</span></h1>
+  <p class="header-sub">由今日嘅起點,一步一步去到 Glen Powell 體型 — 運動型、線條分明、功能性強。呢個唔係速成,係一條清晰、可持續、唔會令你中途放棄嘅路。</p>
+</header>
 
-  <!-- ROADMAP -->
-  <section>
-    <div class="section-label">完整路線圖 — 你嘅每一步</div>
-    <div class="roadmap">
-      <div class="phase active">
-        <div class="phase-dot"></div>
-        <div class="phase-time">起點 · 今日</div>
-        <div class="phase-name">START</div>
-        <div class="phase-weight"><b>97 kg</b></div>
-        <div class="phase-bf">體脂 29.5%</div>
-        <div class="phase-task">建立信心,學識動作,養成習慣。最重要係：開始。</div>
-      </div>
-      <div class="phase">
-        <div class="phase-dot"></div>
-        <div class="phase-time">第 1–4 個月</div>
-        <div class="phase-name">減脂期</div>
-        <div class="phase-weight">97 → <b>87 kg</b></div>
-        <div class="phase-bf">29.5% → 20%</div>
-        <div class="phase-task">減脂為主,習慣 + 力量底打穩。每週減 0.5–0.75kg。</div>
-      </div>
-      <div class="phase">
-        <div class="phase-dot"></div>
-        <div class="phase-time">第 5–8 個月</div>
-        <div class="phase-name">增肌減脂</div>
-        <div class="phase-weight">87 → <b>82 kg</b></div>
-        <div class="phase-bf">20% → 14%</div>
-        <div class="phase-task">Body Recomp。力量大升,肌肉浮現,脂肪繼續跌。</div>
-      </div>
-      <div class="phase">
-        <div class="phase-dot"></div>
-        <div class="phase-time">第 9–12 個月</div>
-        <div class="phase-name">雕塑期</div>
-        <div class="phase-weight">82 → <b>76 kg</b></div>
-        <div class="phase-bf">14% → 11%</div>
-        <div class="phase-task">線條清晰,腹肌顯現,接近目標體型。</div>
-      </div>
-      <div class="phase goal">
-        <div class="phase-dot"></div>
-        <div class="phase-time">約 12 個月後</div>
-        <div class="phase-name">GP 體型</div>
-        <div class="phase-weight"><b>~76 kg</b></div>
-        <div class="phase-bf">體脂 ~11%</div>
-        <div class="phase-task">維持 + 微調。功能性強、運動型、線條分明。</div>
-      </div>
-    </div>
-    <div class="big-progress">
-      <div class="bp-labels"><span>今日 97kg</span><span>目標 76kg</span></div>
-      <div class="bp-track">
-        <div class="bp-fill" id="roadmapFill"></div>
-      </div>
-      <p class="bp-caption" id="roadmapCaption">你而家喺 <b>第 0 天</b>。記錄你嘅進度,呢條進度條會跟住你郁。</p>
-    </div>
-  </section>
+<!-- ROADMAP -->
+<section>
+  <div class="section-label">完整路線圖 — 你嘅每一步</div>
+  <div class="roadmap">
+    <div class="phase active"><div class="phase-dot"></div><div class="phase-time">起點 · 今日</div><div class="phase-name">START</div><div class="phase-weight"><b>97 kg</b></div><div class="phase-bf">體脂 29.5%</div><div class="phase-task">建立信心,學識動作,養成習慣。最重要係：開始。</div></div>
+    <div class="phase"><div class="phase-dot"></div><div class="phase-time">第 1–4 個月</div><div class="phase-name">減脂期</div><div class="phase-weight">97 → <b>87 kg</b></div><div class="phase-bf">29.5% → 20%</div><div class="phase-task">減脂為主,習慣 + 力量底打穩。每週減 0.5–0.75kg。</div></div>
+    <div class="phase"><div class="phase-dot"></div><div class="phase-time">第 5–8 個月</div><div class="phase-name">增肌減脂</div><div class="phase-weight">87 → <b>82 kg</b></div><div class="phase-bf">20% → 14%</div><div class="phase-task">Body Recomp。力量大升,肌肉浮現,脂肪繼續跌。</div></div>
+    <div class="phase"><div class="phase-dot"></div><div class="phase-time">第 9–12 個月</div><div class="phase-name">雕塑期</div><div class="phase-weight">82 → <b>76 kg</b></div><div class="phase-bf">14% → 11%</div><div class="phase-task">線條清晰,腹肌顯現,接近目標體型。</div></div>
+    <div class="phase goal"><div class="phase-dot"></div><div class="phase-time">約 12 個月後</div><div class="phase-name">GP 體型</div><div class="phase-weight"><b>~76 kg</b></div><div class="phase-bf">體脂 ~11%</div><div class="phase-task">維持 + 微調。功能性強、運動型、線條分明。</div></div>
+  </div>
+  <div class="big-progress">
+    <div class="bp-labels"><span>今日 97kg</span><span>目標 76kg</span></div>
+    <div class="bp-track"><div class="bp-fill" id="roadmapFill"></div></div>
+    <p class="bp-caption" id="roadmapCaption">你而家喺 <b>第 0 天</b>。記錄你嘅進度,呢條進度條會跟住你郁。</p>
+  </div>
+</section>
 
-  <!-- ===== PROGRESS TRACKER (REDESIGNED) ===== -->
-  <section>
-    <div class="section-label">進度追蹤 — 記錄你嘅每一步</div>
-    <p class="tracker-intro">每次量度就入返嚟。數據會自動儲存喺呢個裝置,仲會幫你畫圖表睇趨勢。建議每週固定同一日、同一時間（例如朝早起身後）量度。</p>
+<!-- ===== PROGRESS TRACKER (REDESIGNED) ===== -->
+<section>
+  <div class="section-label">進度追蹤 — 記錄你嘅每一步</div>
+  <p class="tracker-intro">每次量度就入返嚟。數據會自動儲存喺呢個裝置,仲會幫你畫圖表睇趨勢。建議每週固定同一日、同一時間（例如朝早起身後）量度。</p>
 
-    <div class="stat-cards" id="statCards">
-      <div class="stat-card">
-        <div class="sc-lbl">現時體重</div>
-        <div class="sc-val" id="scWeight">—<span class="sc-unit">kg</span></div>
-        <div class="sc-delta flat" id="scWeightDelta">未有記錄</div>
-      </div>
-      <div class="stat-card">
-        <div class="sc-lbl">已減體重</div>
-        <div class="sc-val" id="scLost">—<span class="sc-unit">kg</span></div>
-        <div class="sc-delta flat" id="scLostNote">由起點計</div>
-      </div>
-      <div class="stat-card">
-        <div class="sc-lbl">體脂率</div>
-        <div class="sc-val" id="scBf">—<span class="sc-unit">%</span></div>
-        <div class="sc-delta flat" id="scBfDelta">未有記錄</div>
-      </div>
-      <div class="stat-card">
-        <div class="sc-lbl">距離目標</div>
-        <div class="sc-val" id="scToGoal">—<span class="sc-unit">kg</span></div>
-        <div class="sc-delta flat">目標 76kg</div>
-      </div>
-    </div>
+  <div class="stat-cards" id="statCards">
+    <div class="stat-card"><div class="sc-lbl">現時體重</div><div class="sc-val" id="scWeight">—<span class="sc-unit">kg</span></div><div class="sc-delta flat" id="scWeightDelta">未有記錄</div></div>
+    <div class="stat-card"><div class="sc-lbl">已減體重</div><div class="sc-val" id="scLost">—<span class="sc-unit">kg</span></div><div class="sc-delta flat" id="scLostNote">由起點計</div></div>
+    <div class="stat-card"><div class="sc-lbl">體脂率</div><div class="sc-val" id="scBf">—<span class="sc-unit">%</span></div><div class="sc-delta flat" id="scBfDelta">未有記錄</div></div>
+    <div class="stat-card"><div class="sc-lbl">距離目標</div><div class="sc-val" id="scToGoal">—<span class="sc-unit">kg</span></div><div class="sc-delta flat">目標 76kg</div></div>
+  </div>
 
-    <div class="tracker-grid">
-      <!-- redesigned form -->
-      <div class="entry-form">
-        <div class="form-head">
-          <div class="form-title">新增記錄</div>
-          <div class="form-badge" id="todayBadge">今日</div>
-        </div>
-
-        <div class="field-group-label">必填</div>
-        <div class="primary-field">
-          <label>日期</label>
-          <div class="input-shell"><input type="date" id="inDate"></div>
-        </div>
-        <div class="primary-field">
-          <label>體重</label>
-          <div class="input-shell big">
-            <input type="number" step="0.1" id="inWeight" placeholder="97.0" inputmode="decimal">
-            <span class="unit-tag">kg</span>
-            <div class="stepper">
-              <button type="button" data-step="0.1" data-target="inWeight">▲</button>
-              <button type="button" data-step="-0.1" data-target="inWeight">▼</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="field-group-label">選填 — 身體指標</div>
-        <div class="primary-field">
-          <label>體脂率</label>
-          <div class="input-shell">
-            <input type="number" step="0.1" id="inBf" placeholder="29.5" inputmode="decimal">
-            <span class="unit-tag">%</span>
-            <div class="stepper">
-              <button type="button" data-step="0.1" data-target="inBf">▲</button>
-              <button type="button" data-step="-0.1" data-target="inBf">▼</button>
-            </div>
-          </div>
-        </div>
-        <div class="measure-grid">
-          <div class="measure-field"><label>腰圍</label>
-            <div class="input-shell"><input type="number" step="0.1" id="inWaist" placeholder="—"
-                inputmode="decimal"><span class="unit-tag">cm</span></div>
-          </div>
-          <div class="measure-field"><label>胸圍</label>
-            <div class="input-shell"><input type="number" step="0.1" id="inChest" placeholder="—"
-                inputmode="decimal"><span class="unit-tag">cm</span></div>
-          </div>
-          <div class="measure-field"><label>手臂</label>
-            <div class="input-shell"><input type="number" step="0.1" id="inArm" placeholder="—"
-                inputmode="decimal"><span class="unit-tag">cm</span></div>
-          </div>
-          <div class="measure-field"><label>大腿</label>
-            <div class="input-shell"><input type="number" step="0.1" id="inThigh" placeholder="—"
-                inputmode="decimal"><span class="unit-tag">cm</span></div>
-          </div>
-        </div>
-
-        <button class="btn" id="saveBtn">儲存記錄</button>
-        <div class="form-msg" id="formMsg"></div>
+  <div class="tracker-grid">
+    <!-- redesigned form -->
+    <div class="entry-form">
+      <div class="form-head">
+        <div class="form-title">新增記錄</div>
+        <div class="form-badge" id="todayBadge">今日</div>
       </div>
 
-      <div class="chart-area">
-        <div class="chart-box">
-          <h3>體重趨勢 <span class="latest" id="weightLatest"></span></h3>
-          <canvas id="weightChart"></canvas>
-          <div class="empty-state" id="weightEmpty">未有記錄<br>入咗第一筆數據就會見到圖表 📉</div>
-        </div>
-        <div class="chart-box">
-          <h3>體脂趨勢 <span class="latest" id="bfLatest"></span></h3>
-          <canvas id="bfChart"></canvas>
-          <div class="empty-state" id="bfEmpty">未有記錄</div>
-        </div>
+      <div class="field-group-label">必填</div>
+      <div class="primary-field">
+        <label>日期</label>
+        <div class="input-shell"><input type="date" id="inDate"></div>
       </div>
-    </div>
-
-    <div class="history-wrap">
-      <h3>記錄歷史</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>日期</th>
-            <th>體重</th>
-            <th>體脂</th>
-            <th class="hide-mobile">腰圍</th>
-            <th class="hide-mobile">胸圍</th>
-            <th class="hide-mobile">手臂</th>
-            <th class="hide-mobile">大腿</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="historyBody">
-          <tr>
-            <td colspan="8" style="color:var(--gray4); text-align:center; padding:24px;">仲未有記錄</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- PHASE 1 MONTHS -->
-  <section>
-    <div class="section-label">階段1 拆解 — 減脂期 4 個月（你而家做緊嘅）</div>
-    <div class="month-grid">
-      <div class="month-card m1">
-        <div class="month-tag">Month 1</div>
-        <div class="month-title">習慣建立</div>
-        <ul class="month-list">
-          <li>每週 練 3–4 日（唔好心急）</li>
-          <li>學識基本動作,輕重量</li>
-          <li>每日達到蛋白質 175g</li>
-          <li>每日飲水 3 升</li>
-        </ul>
-        <div class="month-target">目標：−2.5 kg → 94.5kg</div>
-      </div>
-      <div class="month-card">
-        <div class="month-tag">Month 2</div>
-        <div class="month-title">力量上升</div>
-        <ul class="month-list">
-          <li>加到 每週 4–5 日</li>
-          <li>大重量複合動作遞進</li>
-          <li>加入 2 次體能訓練</li>
-          <li>力量開始明顯進步</li>
-        </ul>
-        <div class="month-target">目標：−2.5 kg → 92kg</div>
-      </div>
-      <div class="month-card">
-        <div class="month-tag">Month 3</div>
-        <div class="month-title">變化顯現</div>
-        <ul class="month-list">
-          <li>身型明顯收緊</li>
-          <li>體能大幅提升</li>
-          <li>衣服明顯鬆咗</li>
-          <li>習慣已經自動化</li>
-        </ul>
-        <div class="month-target">目標：−2.5 kg → 89.5kg</div>
-      </div>
-      <div class="month-card">
-        <div class="month-tag">Month 4</div>
-        <div class="month-title">突破 20%</div>
-        <ul class="month-list">
-          <li>體脂跌穿 20%</li>
-          <li>準備轉增肌減脂期</li>
-          <li>腹肌輪廓開始出現</li>
-          <li>力量達到新水平</li>
-        </ul>
-        <div class="month-target">目標：−2.5 kg → 87kg ✓</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MACROS -->
-  <section>
-    <div class="section-label">每日營養目標 — 減脂期</div>
-    <div class="macro-strip">
-      <div class="macro-item">
-        <div class="m-val kcal">2,300</div>
-        <div class="m-lbl">每日 kcal</div>
-      </div>
-      <div class="macro-item">
-        <div class="m-val prot">175g</div>
-        <div class="m-lbl">蛋白質 1.8g/kg</div>
-      </div>
-      <div class="macro-item">
-        <div class="m-val carb">210g</div>
-        <div class="m-lbl">碳水 · 訓練前後</div>
-      </div>
-      <div class="macro-item">
-        <div class="m-val fat">65g</div>
-        <div class="m-lbl">脂肪</div>
-      </div>
-      <div class="macro-item">
-        <div class="m-val" style="color:var(--gray5)">−500</div>
-        <div class="m-lbl">每日赤字</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TRAINING -->
-  <section>
-    <div class="section-label">訓練計劃 — 第1個月版本（3練 + 1體能 + 主動恢復）</div>
-    <div class="week-grid">
-      <div class="day-card">
-        <div class="day-num">01</div>
-        <div class="day-name">Mon</div>
-        <div class="day-type tag-strength">力量</div>
-        <div class="day-focus">上半身推</div>
-        <ul class="day-moves">
-          <li>啞鈴臥推<span>3×10</span></li>
-          <li>啞鈴肩推<span>3×10</span></li>
-          <li>繩索夾胸<span>3×12</span></li>
-          <li>繩索下壓<span>3×12</span></li>
-          <li>側平舉<span>3×15</span></li>
-        </ul>
-      </div>
-      <div class="day-card rest">
-        <div class="day-num">02</div>
-        <div class="day-name">Tue</div>
-        <div class="day-type tag-rest">休息</div>
-        <div class="day-focus">散步 + 伸展</div>
-        <ul class="day-moves">
-          <li>輕鬆散步<span>30分</span></li>
-          <li>全身伸展<span>10分</span></li>
-          <li>早瞓<span>7-8h</span></li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-num">03</div>
-        <div class="day-name">Wed</div>
-        <div class="day-type tag-strength">力量</div>
-        <div class="day-focus">下半身</div>
-        <ul class="day-moves">
-          <li>高腳杯深蹲<span>3×10</span></li>
-          <li>腿推機<span>3×12</span></li>
-          <li>羅馬尼亞硬拉<span>3×10</span></li>
-          <li>腿彎舉<span>3×12</span></li>
-          <li>提踵<span>3×15</span></li>
-        </ul>
-      </div>
-      <div class="day-card rest">
-        <div class="day-num">04</div>
-        <div class="day-name">Thu</div>
-        <div class="day-type tag-rest">休息</div>
-        <div class="day-focus">主動恢復</div>
-        <ul class="day-moves">
-          <li>散步<span>30分</span></li>
-          <li>泡沫軸<span>10分</span></li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-num">05</div>
-        <div class="day-name">Fri</div>
-        <div class="day-type tag-strength">力量</div>
-        <div class="day-focus">上半身拉</div>
-        <ul class="day-moves">
-          <li>滑輪下拉<span>3×10</span></li>
-          <li>坐姿划船<span>3×10</span></li>
-          <li>單臂啞鈴划船<span>3×10</span></li>
-          <li>啞鈴彎舉<span>3×12</span></li>
-          <li>平板支撐<span>3×30s</span></li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-num">06</div>
-        <div class="day-name">Sat</div>
-        <div class="day-type tag-cardio">體能</div>
-        <div class="day-focus">輕量循環</div>
-        <ul class="day-moves">
-          <li>單車/划船機<span>15分</span></li>
-          <li>壺鈴擺盪<span>3×15</span></li>
-          <li>登山者<span>3×20</span></li>
-          <li>節奏輕鬆<span>—</span></li>
-        </ul>
-      </div>
-      <div class="day-card rest">
-        <div class="day-num">07</div>
-        <div class="day-name">Sun</div>
-        <div class="day-type tag-rest">全休</div>
-        <div class="day-focus">恢復 + 備餐</div>
-        <ul class="day-moves">
-          <li>完全休息<span>—</span></li>
-          <li>準備下週餸<span>prep</span></li>
-          <li>量體重記錄<span>入app</span></li>
-        </ul>
-      </div>
-    </div>
-    <p class="week-note"><b>教練提示：</b>第1個月重點唔係攰死你,而係令你「企得穩」。每個動作做到最後2次有少少辛苦就啱。第2個月先加到5練同大重量硬拉深蹲。穩定 > 強度。</p>
-  </section>
-
-  <!-- ===== 6-WEEK MEAL ROTATION ===== -->
-  <section>
-    <div class="section-label">6 週輪換餐單 — 每週唔同,唔會悶</div>
-    <div class="week-tabs" id="weekTabs"></div>
-    <div class="week-theme" id="weekTheme"></div>
-    <div id="mealPanels"></div>
-    <p class="week-note"><span class="home-badge">家</span> = 屋企易整 · 烚／煮／蒸／煎為主。每日約 2,300 kcal、175g 蛋白質。每隔 6
-      週循環一次,你會發現自己已經唔知唔覺養成咗習慣。<b>出街時：</b>套用「去皮、少醬、少油」。Sunday 永遠係彈性自由餐。</p>
-  </section>
-
-  <!-- STAPLES + RULES -->
-  <section style="border-bottom:none;">
-    <div class="two-col">
-      <div>
-        <div class="section-label">買定呢啲常備食材</div>
-        <div class="panel">
-          <div class="staple-cat">蛋白質</div>
-          <div class="staple-row"><span class="s-name">雞胸 / 雞髀</span><span class="s-info">31g P / 100g</span></div>
-          <div class="staple-row"><span class="s-name">雞蛋</span><span class="s-info">6g P / 隻</span></div>
-          <div class="staple-row"><span class="s-name">三文魚 / 魚柳 / 蝦</span><span class="s-info">20-25g P / 100g</span>
-          </div>
-          <div class="staple-row"><span class="s-name">瘦牛肉 / 瘦豬肉</span><span class="s-info">26g P / 100g</span></div>
-          <div class="staple-row"><span class="s-name">豆腐 / 希臘乳酪 / 蛋白粉</span><span class="s-info">高 P</span></div>
-          <div class="staple-cat">碳水</div>
-          <div class="staple-row"><span class="s-name">白飯 / 糙米 / 藜麥</span><span class="s-info">訓練前後</span></div>
-          <div class="staple-row"><span class="s-name">紅薯 / 番薯 / 薯仔</span><span class="s-info">高纖飽肚</span></div>
-          <div class="staple-row"><span class="s-name">燕麥 / 全麥麵包</span><span class="s-info">早餐首選</span></div>
-          <div class="staple-cat">蔬菜（任食）</div>
-          <div class="staple-row"><span class="s-name">西蘭花 / 菜心 / 露筍 / 蘑菇</span><span class="s-info">灼／蒸</span></div>
-        </div>
-      </div>
-      <div>
-        <div class="section-label">飲食5大原則</div>
-        <div class="panel">
-          <div class="rule-item">
-            <div class="rule-num">01</div>
-            <div class="rule-text"><strong>蛋白質優先</strong>
-              <p>每餐最少 35g 蛋白質,先諗蛋白質再諗其他。</p>
-            </div>
-          </div>
-          <div class="rule-item">
-            <div class="rule-num">02</div>
-            <div class="rule-text"><strong>碳水擺訓練前後</strong>
-              <p>訓練日將飯／薯放喺練前練後,其餘時間少啲。</p>
-            </div>
-          </div>
-          <div class="rule-item">
-            <div class="rule-num">03</div>
-            <div class="rule-text"><strong>烚煮蒸煎,少油少醬</strong>
-              <p>屋企煮慳好多卡路里。油用噴壺或一茶匙。</p>
-            </div>
-          </div>
-          <div class="rule-item">
-            <div class="rule-num">04</div>
-            <div class="rule-text"><strong>水 3 升 / 日</strong>
-              <p>每餐前飲一大杯水,自然食少 30%。</p>
-            </div>
-          </div>
-          <div class="rule-item">
-            <div class="rule-num">05</div>
-            <div class="rule-text"><strong>80/20 彈性</strong>
-              <p>一餐失手唔等於一日廢。下餐補返就得,絕不「下星期一再開始」。</p>
-            </div>
+      <div class="primary-field">
+        <label>體重</label>
+        <div class="input-shell big">
+          <input type="number" step="0.1" id="inWeight" placeholder="97.0" inputmode="decimal">
+          <span class="unit-tag">kg</span>
+          <div class="stepper">
+            <button type="button" data-step="0.1" data-target="inWeight">▲</button>
+            <button type="button" data-step="-0.1" data-target="inWeight">▼</button>
           </div>
         </div>
       </div>
+
+      <div class="field-group-label">選填 — 身體指標</div>
+      <div class="primary-field">
+        <label>體脂率</label>
+        <div class="input-shell">
+          <input type="number" step="0.1" id="inBf" placeholder="29.5" inputmode="decimal">
+          <span class="unit-tag">%</span>
+          <div class="stepper">
+            <button type="button" data-step="0.1" data-target="inBf">▲</button>
+            <button type="button" data-step="-0.1" data-target="inBf">▼</button>
+          </div>
+        </div>
+      </div>
+      <div class="measure-grid">
+        <div class="measure-field"><label>腰圍</label><div class="input-shell"><input type="number" step="0.1" id="inWaist" placeholder="—" inputmode="decimal"><span class="unit-tag">cm</span></div></div>
+        <div class="measure-field"><label>胸圍</label><div class="input-shell"><input type="number" step="0.1" id="inChest" placeholder="—" inputmode="decimal"><span class="unit-tag">cm</span></div></div>
+        <div class="measure-field"><label>手臂</label><div class="input-shell"><input type="number" step="0.1" id="inArm" placeholder="—" inputmode="decimal"><span class="unit-tag">cm</span></div></div>
+        <div class="measure-field"><label>大腿</label><div class="input-shell"><input type="number" step="0.1" id="inThigh" placeholder="—" inputmode="decimal"><span class="unit-tag">cm</span></div></div>
+      </div>
+
+      <button class="btn" id="saveBtn">儲存記錄</button>
+      <div class="form-msg" id="formMsg"></div>
     </div>
-  </section>
 
-  <footer>
-    <p>© COACH GP · 完整 12 個月藍圖 + 進度追蹤 + 6週輪換餐單</p>
-    <div class="gp-tag">GP</div>
-  </footer>
+    <div class="chart-area">
+      <div class="chart-box">
+        <h3>體重趨勢 <span class="latest" id="weightLatest"></span></h3>
+        <canvas id="weightChart"></canvas>
+        <div class="empty-state" id="weightEmpty">未有記錄<br>入咗第一筆數據就會見到圖表 📉</div>
+      </div>
+      <div class="chart-box">
+        <h3>體脂趨勢 <span class="latest" id="bfLatest"></span></h3>
+        <canvas id="bfChart"></canvas>
+        <div class="empty-state" id="bfEmpty">未有記錄</div>
+      </div>
+    </div>
+  </div>
 
-  <script>
-    /* ============ MEAL ROTATION DATA ============ */
-    const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const SHAKE = { t: '宵夜', n: '蛋白奶昔', m: '~120 · P25g' };
-    // each week: theme + 7 days; each day = [breakfast, lunch, pre, dinner] (+shake auto)
-    const WEEKS = [
-      {
-        theme: '經典入門 — 雞、魚、蛋為主,最簡單', days: [
-          [['早餐', '炒蛋(3隻)+燕麥', true, '~520 · P34g'], ['午餐', '烚雞胸+白飯+灼菜', true, '~650 · P50g'], ['訓前', '希臘乳酪+香蕉', false, '~300 · P20g'], ['晚餐', '煎三文魚+蒸紅薯+西蘭花', true, '~710 · P46g']],
-          [['早餐', '烚蛋(3隻)+全麥麵包', true, '~480 · P32g'], ['午餐', '蕃茄煮牛肉+飯', true, '~680 · P48g'], ['訓前', '蘋果+茅屋芝士', false, '~280 · P18g'], ['晚餐', '蒸魚柳+蒸蛋+灼菜心', true, '~620 · P45g']],
-          [['早餐', '燕麥+蛋白粉+藍莓', true, '~520 · P40g'], ['午餐', '烚雞髀(去皮)+番薯+菜', true, '~640 · P44g'], ['訓前', '吞拿魚(罐)+全麥餅', false, '~310 · P28g'], ['晚餐', '瘦豬肉炒椰菜+飯', true, '~690 · P46g']],
-          [['早餐', '炒蛋+牛油果多士', true, '~560 · P34g'], ['午餐', '烚雞胸+意粉+蕃茄醬', true, '~680 · P48g'], ['訓前', '香蕉+希臘乳酪', false, '~300 · P20g'], ['晚餐', '煎牛扒(150g)+烤薯仔+菜', true, '~700 · P48g']],
-          [['早餐', '烚蛋(3隻)+燕麥', true, '~500 · P34g'], ['午餐', '蒸雞+飯+灼生菜', true, '~640 · P46g'], ['訓前', '乳酪+腰果(20g)', false, '~300 · P22g'], ['晚餐', '煎三文魚+蒸蛋+西蘭花', true, '~700 · P46g']],
-          [['早餐', '炒蛋+煙三文魚+多士', true, '~560 · P42g'], ['午餐', '烚牛肉+番薯+灼菜', true, '~660 · P48g'], ['訓前', '香蕉+蛋白棒', false, '~300 · P20g'], ['晚餐', '蒸雞+蒸蔬菜+飯', true, '~620 · P45g']],
-          [['早餐', '炒蛋+燕麥', true, '~500 · P34g'], ['午餐', '自由餐 — 想食咩食咩(控份量)', false, '~700 · P35g'], ['下午', '希臘乳酪+水果', false, '~250 · P18g'], ['晚餐', '清蒸魚+灼菜+細碗飯', true, '~650 · P45g']],
-        ]
-      },
-      {
-        theme: '亞洲風味 — 多咗豆腐、蝦、雞肉變化', days: [
-          [['早餐', '蝦仁炒蛋+白粥', true, '~490 · P36g'], ['午餐', '照燒雞胸+糙米+西蘭花', true, '~660 · P50g'], ['訓前', '豆漿+香蕉', false, '~280 · P18g'], ['晚餐', '蒸水蛋+蒸魚+菜心', true, '~600 · P44g']],
-          [['早餐', '茶葉蛋(3隻)+燕麥', true, '~470 · P32g'], ['午餐', '麻婆豆腐(少油)+瘦肉碎+飯', true, '~680 · P46g'], ['訓前', '希臘乳酪+藍莓', false, '~290 · P20g'], ['晚餐', '烚雞絲+冬瓜湯+飯', true, '~620 · P46g']],
-          [['早餐', '燕麥+蛋白粉+杏仁', true, '~530 · P40g'], ['午餐', '三杯雞(少油去皮)+飯+菜', true, '~670 · P48g'], ['訓前', '吞拿魚+全麥餅', false, '~310 · P28g'], ['晚餐', '清蒸蝦+蒜蓉炒菜+番薯', true, '~600 · P50g']],
-          [['早餐', '蒸蛋白+雞肉粥', true, '~480 · P38g'], ['午餐', '黑椒牛柳(少油)+飯+灼菜', true, '~700 · P50g'], ['訓前', '蘋果+乳酪', false, '~280 · P18g'], ['晚餐', '蒸魚柳+豆腐+菜', true, '~580 · P46g']],
-          [['早餐', '炒蛋+煙三文魚多士', true, '~560 · P42g'], ['午餐', '薑蔥雞(去皮)+糙米+菜', true, '~650 · P48g'], ['訓前', '香蕉+蛋白棒', false, '~300 · P20g'], ['晚餐', '豆腐肉碎煲+灼菜+細碗飯', true, '~610 · P45g']],
-          [['早餐', '蝦仁滑蛋+全麥包', true, '~520 · P40g'], ['午餐', '白切雞(去皮)+飯+青瓜', true, '~640 · P50g'], ['訓前', '乳酪+腰果', false, '~300 · P22g'], ['晚餐', '蒸三文魚+菠菜+紅薯', true, '~680 · P46g']],
-          [['早餐', '燕麥+蛋', true, '~500 · P34g'], ['午餐', '自由餐 — 想食咩食咩(控份量)', false, '~700 · P35g'], ['下午', '豆漿+水果', false, '~250 · P16g'], ['晚餐', '清蒸雞+灼菜+細碗飯', true, '~640 · P46g']],
-        ]
-      },
-      {
-        theme: '地中海風 — 橄欖油、魚、豆類、希臘乳酪', days: [
-          [['早餐', '希臘乳酪+燕麥+果仁', true, '~530 · P38g'], ['午餐', '烤雞胸+藜麥沙律+橄欖油', true, '~660 · P50g'], ['訓前', '香蕉+蛋白奶', false, '~290 · P22g'], ['晚餐', '烤三文魚+烤蔬菜+番薯', true, '~700 · P46g']],
-          [['早餐', '炒蛋+牛油果+全麥包', true, '~560 · P34g'], ['午餐', '吞拿魚豆類沙律+飯', true, '~640 · P48g'], ['訓前', '乳酪+藍莓', false, '~280 · P20g'], ['晚餐', '香草烤雞+蒜蓉露筍+薯仔', true, '~680 · P50g']],
-          [['早餐', '燕麥+蛋白粉+草莓', true, '~520 · P40g'], ['午餐', '烤魚柳+鷹嘴豆+菜', true, '~620 · P46g'], ['訓前', '蘋果+杏仁', false, '~290 · P14g'], ['晚餐', '烤瘦牛+烤甜椒+糙米', true, '~700 · P50g']],
-          [['早餐', '水波蛋(3隻)+全麥包', true, '~490 · P34g'], ['午餐', '烤雞+希臘沙律+番薯', true, '~660 · P48g'], ['訓前', '希臘乳酪+蜜糖', false, '~290 · P22g'], ['晚餐', '蒜蓉蝦+西蘭花+藜麥', true, '~620 · P50g']],
-          [['早餐', '煙三文魚+炒蛋+多士', true, '~560 · P42g'], ['午餐', '烤火雞胸+扁豆+菜', true, '~640 · P50g'], ['訓前', '香蕉+蛋白棒', false, '~300 · P20g'], ['晚餐', '烤魚+烤雜菜+薯仔', true, '~640 · P44g']],
-          [['早餐', '希臘乳酪+果仁麥片', true, '~520 · P38g'], ['午餐', '烤雞胸+藜麥碗+牛油果', true, '~680 · P48g'], ['訓前', '乳酪+水果', false, '~280 · P18g'], ['晚餐', '烤三文魚+露筍+番薯', true, '~700 · P46g']],
-          [['早餐', '炒蛋+牛油果多士', true, '~530 · P32g'], ['午餐', '自由餐 — 想食咩食咩(控份量)', false, '~700 · P35g'], ['下午', '希臘乳酪+莓', false, '~250 · P18g'], ['晚餐', '烤魚+灼菜+細碗藜麥', true, '~620 · P44g']],
-        ]
-      },
-      {
-        theme: '高蛋白省時 — 食材少、煮得快、meal prep 友好', days: [
-          [['早餐', '蛋白奶昔+燕麥+花生醬', true, '~540 · P42g'], ['午餐', '大批烚雞胸+飯+西蘭花', true, '~660 · P52g'], ['訓前', '香蕉+乳酪', false, '~290 · P20g'], ['晚餐', '煎三文魚+番薯+菜', true, '~700 · P46g']],
-          [['早餐', '烚蛋(4隻)+多士', true, '~490 · P36g'], ['午餐', '烚雞胸(預煮)+飯+灼菜', true, '~650 · P52g'], ['訓前', '蛋白棒', false, '~250 · P20g'], ['晚餐', '蕃茄煮牛肉碎+飯', true, '~700 · P48g']],
-          [['早餐', '燕麥+蛋白粉', true, '~500 · P42g'], ['午餐', '吞拿魚飯團+灼菜', true, '~620 · P44g'], ['訓前', '乳酪+香蕉', false, '~290 · P20g'], ['晚餐', '煎雞扒+薯仔+菜', true, '~690 · P50g']],
-          [['早餐', '炒蛋(3隻)+燕麥', true, '~520 · P34g'], ['午餐', '預煮牛肉+飯+菜', true, '~700 · P50g'], ['訓前', '蘋果+蛋白奶', false, '~280 · P22g'], ['晚餐', '烚蝦+番薯+西蘭花', true, '~600 · P48g']],
-          [['早餐', '蛋白奶昔+全麥包+蛋', true, '~530 · P44g'], ['午餐', '烚雞胸+意粉+蕃茄', true, '~680 · P50g'], ['訓前', '蛋白棒', false, '~250 · P20g'], ['晚餐', '煎魚柳+薯仔+菜', true, '~640 · P44g']],
-          [['早餐', '燕麥+乳酪+果仁', true, '~520 · P36g'], ['午餐', '預煮雞+飯+灼菜', true, '~650 · P50g'], ['訓前', '香蕉+蛋白奶', false, '~290 · P22g'], ['晚餐', '烚牛肉+番薯+西蘭花', true, '~680 · P50g']],
-          [['早餐', '炒蛋+燕麥', true, '~500 · P34g'], ['午餐', '自由餐 — 想食咩食咩(控份量)', false, '~700 · P35g'], ['下午', '蛋白奶昔', false, '~150 · P25g'], ['晚餐', '清蒸雞+菜+細碗飯', true, '~620 · P46g']],
-        ]
-      },
-      {
-        theme: '西式家常 — 牛扒、烤雞、薯仔變化', days: [
-          [['早餐', '炒蛋+牛油果+全麥包', true, '~560 · P34g'], ['午餐', '烤雞胸+薯蓉(少牛油)+菜', true, '~660 · P50g'], ['訓前', '乳酪+香蕉', false, '~290 · P20g'], ['晚餐', '煎牛扒(150g)+烤薯+西蘭花', true, '~720 · P50g']],
-          [['早餐', '燕麥+蛋白粉+蘋果', true, '~510 · P40g'], ['午餐', '雞肉墨西哥碗(飯+豆+莎莎)', true, '~680 · P46g'], ['訓前', '蛋白棒', false, '~250 · P20g'], ['晚餐', '烤魚柳+薯角+雜菜', true, '~640 · P44g']],
-          [['早餐', '炒蛋(3隻)+煙肉(瘦)+多士', true, '~540 · P36g'], ['午餐', '烤火雞肉漢堡(全麥包)+沙律', true, '~660 · P48g'], ['訓前', '香蕉+乳酪', false, '~290 · P20g'], ['晚餐', '焗雞胸+焗薯+露筍', true, '~680 · P50g']],
-          [['早餐', '蛋白奶昔+燕麥', true, '~500 · P42g'], ['午餐', '烤牛肉+薯仔+灼菜', true, '~710 · P50g'], ['訓前', '蘋果+杏仁', false, '~280 · P14g'], ['晚餐', '煎三文魚+薯蓉+菜', true, '~700 · P46g']],
-          [['早餐', '炒蛋+牛油果多士', true, '~560 · P34g'], ['午餐', '雞肉意粉(蕃茄醬)+菜', true, '~680 · P48g'], ['訓前', '蛋白棒', false, '~250 · P20g'], ['晚餐', '烤豬扒(瘦)+薯角+西蘭花', true, '~680 · P48g']],
-          [['早餐', '燕麥+乳酪+莓', true, '~520 · P38g'], ['午餐', '烤雞+藜麥+雜菜', true, '~650 · P50g'], ['訓前', '香蕉+蛋白奶', false, '~290 · P22g'], ['晚餐', '煎牛扒+焗薯+菜', true, '~720 · P50g']],
-          [['早餐', '炒蛋+多士', true, '~500 · P32g'], ['午餐', '自由餐 — 想食咩食咩(控份量)', false, '~700 · P35g'], ['下午', '乳酪+水果', false, '~250 · P18g'], ['晚餐', '烤魚+灼菜+細碗薯', true, '~640 · P44g']],
-        ]
-      },
-      {
-        theme: '清淡輕盈 — 多湯、蒸煮、減鈉,身體休息週', days: [
-          [['早餐', '蒸蛋白+雞肉粥', true, '~470 · P38g'], ['午餐', '烚雞胸+冬瓜湯+飯', true, '~640 · P50g'], ['訓前', '香蕉+乳酪', false, '~290 · P20g'], ['晚餐', '清蒸魚+灼菜心+番薯', true, '~600 · P44g']],
-          [['早餐', '燕麥+蛋白粉+藍莓', true, '~510 · P40g'], ['午餐', '蕃茄魚湯+雞肉+飯', true, '~620 · P46g'], ['訓前', '希臘乳酪+蘋果', false, '~280 · P20g'], ['晚餐', '蒸水蛋+蒸蝦+菜', true, '~580 · P46g']],
-          [['早餐', '烚蛋(3隻)+燕麥', true, '~480 · P34g'], ['午餐', '烚瘦牛+蔬菜湯+飯', true, '~660 · P48g'], ['訓前', '乳酪+香蕉', false, '~290 · P20g'], ['晚餐', '蒸雞+灼西蘭花+紅薯', true, '~600 · P48g']],
-          [['早餐', '蝦仁滑蛋+白粥', true, '~480 · P38g'], ['午餐', '豆腐魚湯+雞絲+飯', true, '~600 · P46g'], ['訓前', '蘋果+蛋白奶', false, '~280 · P22g'], ['晚餐', '蒸魚柳+蒸蛋+菜', true, '~580 · P44g']],
-          [['早餐', '燕麥+乳酪+果仁', true, '~520 · P36g'], ['午餐', '烚雞胸+海帶湯+飯', true, '~640 · P50g'], ['訓前', '香蕉+蛋白棒', false, '~300 · P20g'], ['晚餐', '清蒸三文魚+菠菜+番薯', true, '~680 · P46g']],
-          [['早餐', '蒸蛋+全麥包', true, '~470 · P34g'], ['午餐', '白切雞(去皮)+蔬菜湯+飯', true, '~620 · P48g'], ['訓前', '乳酪+莓', false, '~280 · P18g'], ['晚餐', '蒸蝦+灼菜+細碗飯', true, '~580 · P48g']],
-          [['早餐', '燕麥+蛋', true, '~500 · P34g'], ['午餐', '自由餐 — 想食咩食咩(控份量)', false, '~700 · P35g'], ['下午', '希臘乳酪+水果', false, '~250 · P18g'], ['晚餐', '清湯灼魚+灼菜+細碗飯', true, '~600 · P44g']],
-        ]
-      },
-    ];
+  <div class="history-wrap">
+    <h3>記錄歷史</h3>
+    <table>
+      <thead><tr><th>日期</th><th>體重</th><th>體脂</th><th class="hide-mobile">腰圍</th><th class="hide-mobile">胸圍</th><th class="hide-mobile">手臂</th><th class="hide-mobile">大腿</th><th></th></tr></thead>
+      <tbody id="historyBody"><tr><td colspan="8" style="color:var(--gray4); text-align:center; padding:24px;">仲未有記錄</td></tr></tbody>
+    </table>
+  </div>
+</section>
 
-    function buildMeals() {
-      const tabs = document.getElementById('weekTabs');
-      const panels = document.getElementById('mealPanels');
-      WEEKS.forEach((wk, wi) => {
-        const tab = document.createElement('button');
-        tab.className = 'week-tab' + (wi === 0 ? ' active' : '');
-        tab.textContent = '第 ' + (wi + 1) + ' 週';
-        tab.onclick = () => selectWeek(wi);
-        tabs.appendChild(tab);
+<!-- PHASE 1 MONTHS -->
+<section>
+  <div class="section-label">階段1 拆解 — 減脂期 4 個月（你而家做緊嘅）</div>
+  <div class="month-grid">
+    <div class="month-card m1"><div class="month-tag">Month 1</div><div class="month-title">習慣建立</div><ul class="month-list"><li>每週 練 3–4 日（唔好心急）</li><li>學識基本動作,輕重量</li><li>每日達到蛋白質 175g</li><li>每日飲水 3 升</li></ul><div class="month-target">目標：−2.5 kg → 94.5kg</div></div>
+    <div class="month-card"><div class="month-tag">Month 2</div><div class="month-title">力量上升</div><ul class="month-list"><li>加到 每週 4–5 日</li><li>大重量複合動作遞進</li><li>加入 2 次體能訓練</li><li>力量開始明顯進步</li></ul><div class="month-target">目標：−2.5 kg → 92kg</div></div>
+    <div class="month-card"><div class="month-tag">Month 3</div><div class="month-title">變化顯現</div><ul class="month-list"><li>身型明顯收緊</li><li>體能大幅提升</li><li>衣服明顯鬆咗</li><li>習慣已經自動化</li></ul><div class="month-target">目標：−2.5 kg → 89.5kg</div></div>
+    <div class="month-card"><div class="month-tag">Month 4</div><div class="month-title">突破 20%</div><ul class="month-list"><li>體脂跌穿 20%</li><li>準備轉增肌減脂期</li><li>腹肌輪廓開始出現</li><li>力量達到新水平</li></ul><div class="month-target">目標：−2.5 kg → 87kg ✓</div></div>
+  </div>
+</section>
 
-        const panel = document.createElement('div');
-        panel.className = 'meal-panel' + (wi === 0 ? ' active' : '');
-        panel.dataset.wi = wi;
-        const grid = document.createElement('div');
-        grid.className = 'meal-grid';
-        wk.days.forEach((day, di) => {
-          const isFree = di === 6;
-          const slots = day.map(s => {
-            const badge = s[2] ? '<span class="home-badge">家</span>' : '';
-            return '<div class="meal-slot"><div class="meal-time">' + s[0] + '</div><div class="meal-name">' + s[1] + badge + '</div><div class="meal-macros">' + s[3] + '</div></div>';
-          }).join('');
-          const shake = '<div class="meal-slot"><div class="meal-time">' + SHAKE.t + '</div><div class="meal-name">' + SHAKE.n + '</div><div class="meal-macros">' + SHAKE.m + '</div></div>';
-          grid.innerHTML += '<div class="meal-day' + (isFree ? ' free' : '') + '"><div class="meal-day-hdr">' + DAYS[di] + (isFree ? ' · 彈性日' : '') + '</div>' + slots + shake + '</div>';
-        });
-        panel.appendChild(grid);
-        panels.appendChild(panel);
+<!-- MACROS -->
+<section>
+  <div class="section-label">每日營養目標 — 減脂期</div>
+  <div class="macro-strip">
+    <div class="macro-item"><div class="m-val kcal">2,300</div><div class="m-lbl">每日 kcal</div></div>
+    <div class="macro-item"><div class="m-val prot">175g</div><div class="m-lbl">蛋白質 1.8g/kg</div></div>
+    <div class="macro-item"><div class="m-val carb">210g</div><div class="m-lbl">碳水 · 訓練前後</div></div>
+    <div class="macro-item"><div class="m-val fat">65g</div><div class="m-lbl">脂肪</div></div>
+    <div class="macro-item"><div class="m-val" style="color:var(--gray5)">−500</div><div class="m-lbl">每日赤字</div></div>
+  </div>
+</section>
+
+<!-- TRAINING -->
+<section>
+  <div class="section-label">訓練計劃 — 第1個月版本（3練 + 1體能 + 主動恢復）</div>
+  <div class="week-grid">
+    <div class="day-card"><div class="day-num">01</div><div class="day-name">Mon</div><div class="day-type tag-strength">力量</div><div class="day-focus">上半身推</div><ul class="day-moves"><li>啞鈴臥推<span>3×10</span></li><li>啞鈴肩推<span>3×10</span></li><li>繩索夾胸<span>3×12</span></li><li>繩索下壓<span>3×12</span></li><li>側平舉<span>3×15</span></li></ul></div>
+    <div class="day-card rest"><div class="day-num">02</div><div class="day-name">Tue</div><div class="day-type tag-rest">休息</div><div class="day-focus">散步 + 伸展</div><ul class="day-moves"><li>輕鬆散步<span>30分</span></li><li>全身伸展<span>10分</span></li><li>早瞓<span>7-8h</span></li></ul></div>
+    <div class="day-card"><div class="day-num">03</div><div class="day-name">Wed</div><div class="day-type tag-strength">力量</div><div class="day-focus">下半身</div><ul class="day-moves"><li>高腳杯深蹲<span>3×10</span></li><li>腿推機<span>3×12</span></li><li>羅馬尼亞硬拉<span>3×10</span></li><li>腿彎舉<span>3×12</span></li><li>提踵<span>3×15</span></li></ul></div>
+    <div class="day-card rest"><div class="day-num">04</div><div class="day-name">Thu</div><div class="day-type tag-rest">休息</div><div class="day-focus">主動恢復</div><ul class="day-moves"><li>散步<span>30分</span></li><li>泡沫軸<span>10分</span></li></ul></div>
+    <div class="day-card"><div class="day-num">05</div><div class="day-name">Fri</div><div class="day-type tag-strength">力量</div><div class="day-focus">上半身拉</div><ul class="day-moves"><li>滑輪下拉<span>3×10</span></li><li>坐姿划船<span>3×10</span></li><li>單臂啞鈴划船<span>3×10</span></li><li>啞鈴彎舉<span>3×12</span></li><li>平板支撐<span>3×30s</span></li></ul></div>
+    <div class="day-card"><div class="day-num">06</div><div class="day-name">Sat</div><div class="day-type tag-cardio">體能</div><div class="day-focus">輕量循環</div><ul class="day-moves"><li>單車/划船機<span>15分</span></li><li>壺鈴擺盪<span>3×15</span></li><li>登山者<span>3×20</span></li><li>節奏輕鬆<span>—</span></li></ul></div>
+    <div class="day-card rest"><div class="day-num">07</div><div class="day-name">Sun</div><div class="day-type tag-rest">全休</div><div class="day-focus">恢復 + 備餐</div><ul class="day-moves"><li>完全休息<span>—</span></li><li>準備下週餸<span>prep</span></li><li>量體重記錄<span>入app</span></li></ul></div>
+  </div>
+  <p class="week-note"><b>教練提示：</b>第1個月重點唔係攰死你,而係令你「企得穩」。每個動作做到最後2次有少少辛苦就啱。第2個月先加到5練同大重量硬拉深蹲。穩定 > 強度。</p>
+</section>
+
+<!-- ===== 6-WEEK MEAL ROTATION ===== -->
+<section>
+  <div class="section-label">6 週輪換餐單 — 每週唔同,唔會悶</div>
+  <div class="week-tabs" id="weekTabs"></div>
+  <div class="week-theme" id="weekTheme"></div>
+  <div id="mealPanels"></div>
+  <p class="week-note"><span class="home-badge">家</span> = 屋企易整 · 烚／煮／蒸／煎為主。每日約 2,300 kcal、175g 蛋白質。每隔 6 週循環一次,你會發現自己已經唔知唔覺養成咗習慣。<b>出街時：</b>套用「去皮、少醬、少油」。Sunday 永遠係彈性自由餐。</p>
+</section>
+
+<!-- STAPLES + RULES -->
+<section style="border-bottom:none;">
+  <div class="two-col">
+    <div>
+      <div class="section-label">買定呢啲常備食材</div>
+      <div class="panel">
+        <div class="staple-cat">蛋白質</div>
+        <div class="staple-row"><span class="s-name">雞胸 / 雞髀</span><span class="s-info">31g P / 100g</span></div>
+        <div class="staple-row"><span class="s-name">雞蛋</span><span class="s-info">6g P / 隻</span></div>
+        <div class="staple-row"><span class="s-name">三文魚 / 魚柳 / 蝦</span><span class="s-info">20-25g P / 100g</span></div>
+        <div class="staple-row"><span class="s-name">瘦牛肉 / 瘦豬肉</span><span class="s-info">26g P / 100g</span></div>
+        <div class="staple-row"><span class="s-name">豆腐 / 希臘乳酪 / 蛋白粉</span><span class="s-info">高 P</span></div>
+        <div class="staple-cat">碳水</div>
+        <div class="staple-row"><span class="s-name">白飯 / 糙米 / 藜麥</span><span class="s-info">訓練前後</span></div>
+        <div class="staple-row"><span class="s-name">紅薯 / 番薯 / 薯仔</span><span class="s-info">高纖飽肚</span></div>
+        <div class="staple-row"><span class="s-name">燕麥 / 全麥麵包</span><span class="s-info">早餐首選</span></div>
+        <div class="staple-cat">蔬菜（任食）</div>
+        <div class="staple-row"><span class="s-name">西蘭花 / 菜心 / 露筍 / 蘑菇</span><span class="s-info">灼／蒸</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label">飲食5大原則</div>
+      <div class="panel">
+        <div class="rule-item"><div class="rule-num">01</div><div class="rule-text"><strong>蛋白質優先</strong><p>每餐最少 35g 蛋白質,先諗蛋白質再諗其他。</p></div></div>
+        <div class="rule-item"><div class="rule-num">02</div><div class="rule-text"><strong>碳水擺訓練前後</strong><p>訓練日將飯／薯放喺練前練後,其餘時間少啲。</p></div></div>
+        <div class="rule-item"><div class="rule-num">03</div><div class="rule-text"><strong>烚煮蒸煎,少油少醬</strong><p>屋企煮慳好多卡路里。油用噴壺或一茶匙。</p></div></div>
+        <div class="rule-item"><div class="rule-num">04</div><div class="rule-text"><strong>水 3 升 / 日</strong><p>每餐前飲一大杯水,自然食少 30%。</p></div></div>
+        <div class="rule-item"><div class="rule-num">05</div><div class="rule-text"><strong>80/20 彈性</strong><p>一餐失手唔等於一日廢。下餐補返就得,絕不「下星期一再開始」。</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© COACH GP · 完整 12 個月藍圖 + 進度追蹤 + 6週輪換餐單</p>
+  <div class="gp-tag">GP</div>
+</footer>
+
+<script>
+  /* ============ MEAL ROTATION DATA ============ */
+  const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const SHAKE = {t:'宵夜', n:'蛋白奶昔', m:'~120 · P25g'};
+  // each week: theme + 7 days; each day = [breakfast, lunch, pre, dinner] (+shake auto)
+  const WEEKS = [
+    { theme:'經典入門 — 雞、魚、蛋為主,最簡單', days:[
+      [['早餐','炒蛋(3隻)+燕麥',true,'~520 · P34g'],['午餐','烚雞胸+白飯+灼菜',true,'~650 · P50g'],['訓前','希臘乳酪+香蕉',false,'~300 · P20g'],['晚餐','煎三文魚+蒸紅薯+西蘭花',true,'~710 · P46g']],
+      [['早餐','烚蛋(3隻)+全麥麵包',true,'~480 · P32g'],['午餐','蕃茄煮牛肉+飯',true,'~680 · P48g'],['訓前','蘋果+茅屋芝士',false,'~280 · P18g'],['晚餐','蒸魚柳+蒸蛋+灼菜心',true,'~620 · P45g']],
+      [['早餐','燕麥+蛋白粉+藍莓',true,'~520 · P40g'],['午餐','烚雞髀(去皮)+番薯+菜',true,'~640 · P44g'],['訓前','吞拿魚(罐)+全麥餅',false,'~310 · P28g'],['晚餐','瘦豬肉炒椰菜+飯',true,'~690 · P46g']],
+      [['早餐','炒蛋+牛油果多士',true,'~560 · P34g'],['午餐','烚雞胸+意粉+蕃茄醬',true,'~680 · P48g'],['訓前','香蕉+希臘乳酪',false,'~300 · P20g'],['晚餐','煎牛扒(150g)+烤薯仔+菜',true,'~700 · P48g']],
+      [['早餐','烚蛋(3隻)+燕麥',true,'~500 · P34g'],['午餐','蒸雞+飯+灼生菜',true,'~640 · P46g'],['訓前','乳酪+腰果(20g)',false,'~300 · P22g'],['晚餐','煎三文魚+蒸蛋+西蘭花',true,'~700 · P46g']],
+      [['早餐','炒蛋+煙三文魚+多士',true,'~560 · P42g'],['午餐','烚牛肉+番薯+灼菜',true,'~660 · P48g'],['訓前','香蕉+蛋白棒',false,'~300 · P20g'],['晚餐','蒸雞+蒸蔬菜+飯',true,'~620 · P45g']],
+      [['早餐','炒蛋+燕麥',true,'~500 · P34g'],['午餐','自由餐 — 想食咩食咩(控份量)',false,'~700 · P35g'],['下午','希臘乳酪+水果',false,'~250 · P18g'],['晚餐','清蒸魚+灼菜+細碗飯',true,'~650 · P45g']],
+    ]},
+    { theme:'亞洲風味 — 多咗豆腐、蝦、雞肉變化', days:[
+      [['早餐','蝦仁炒蛋+白粥',true,'~490 · P36g'],['午餐','照燒雞胸+糙米+西蘭花',true,'~660 · P50g'],['訓前','豆漿+香蕉',false,'~280 · P18g'],['晚餐','蒸水蛋+蒸魚+菜心',true,'~600 · P44g']],
+      [['早餐','茶葉蛋(3隻)+燕麥',true,'~470 · P32g'],['午餐','麻婆豆腐(少油)+瘦肉碎+飯',true,'~680 · P46g'],['訓前','希臘乳酪+藍莓',false,'~290 · P20g'],['晚餐','烚雞絲+冬瓜湯+飯',true,'~620 · P46g']],
+      [['早餐','燕麥+蛋白粉+杏仁',true,'~530 · P40g'],['午餐','三杯雞(少油去皮)+飯+菜',true,'~670 · P48g'],['訓前','吞拿魚+全麥餅',false,'~310 · P28g'],['晚餐','清蒸蝦+蒜蓉炒菜+番薯',true,'~600 · P50g']],
+      [['早餐','蒸蛋白+雞肉粥',true,'~480 · P38g'],['午餐','黑椒牛柳(少油)+飯+灼菜',true,'~700 · P50g'],['訓前','蘋果+乳酪',false,'~280 · P18g'],['晚餐','蒸魚柳+豆腐+菜',true,'~580 · P46g']],
+      [['早餐','炒蛋+煙三文魚多士',true,'~560 · P42g'],['午餐','薑蔥雞(去皮)+糙米+菜',true,'~650 · P48g'],['訓前','香蕉+蛋白棒',false,'~300 · P20g'],['晚餐','豆腐肉碎煲+灼菜+細碗飯',true,'~610 · P45g']],
+      [['早餐','蝦仁滑蛋+全麥包',true,'~520 · P40g'],['午餐','白切雞(去皮)+飯+青瓜',true,'~640 · P50g'],['訓前','乳酪+腰果',false,'~300 · P22g'],['晚餐','蒸三文魚+菠菜+紅薯',true,'~680 · P46g']],
+      [['早餐','燕麥+蛋',true,'~500 · P34g'],['午餐','自由餐 — 想食咩食咩(控份量)',false,'~700 · P35g'],['下午','豆漿+水果',false,'~250 · P16g'],['晚餐','清蒸雞+灼菜+細碗飯',true,'~640 · P46g']],
+    ]},
+    { theme:'地中海風 — 橄欖油、魚、豆類、希臘乳酪', days:[
+      [['早餐','希臘乳酪+燕麥+果仁',true,'~530 · P38g'],['午餐','烤雞胸+藜麥沙律+橄欖油',true,'~660 · P50g'],['訓前','香蕉+蛋白奶',false,'~290 · P22g'],['晚餐','烤三文魚+烤蔬菜+番薯',true,'~700 · P46g']],
+      [['早餐','炒蛋+牛油果+全麥包',true,'~560 · P34g'],['午餐','吞拿魚豆類沙律+飯',true,'~640 · P48g'],['訓前','乳酪+藍莓',false,'~280 · P20g'],['晚餐','香草烤雞+蒜蓉露筍+薯仔',true,'~680 · P50g']],
+      [['早餐','燕麥+蛋白粉+草莓',true,'~520 · P40g'],['午餐','烤魚柳+鷹嘴豆+菜',true,'~620 · P46g'],['訓前','蘋果+杏仁',false,'~290 · P14g'],['晚餐','烤瘦牛+烤甜椒+糙米',true,'~700 · P50g']],
+      [['早餐','水波蛋(3隻)+全麥包',true,'~490 · P34g'],['午餐','烤雞+希臘沙律+番薯',true,'~660 · P48g'],['訓前','希臘乳酪+蜜糖',false,'~290 · P22g'],['晚餐','蒜蓉蝦+西蘭花+藜麥',true,'~620 · P50g']],
+      [['早餐','煙三文魚+炒蛋+多士',true,'~560 · P42g'],['午餐','烤火雞胸+扁豆+菜',true,'~640 · P50g'],['訓前','香蕉+蛋白棒',false,'~300 · P20g'],['晚餐','烤魚+烤雜菜+薯仔',true,'~640 · P44g']],
+      [['早餐','希臘乳酪+果仁麥片',true,'~520 · P38g'],['午餐','烤雞胸+藜麥碗+牛油果',true,'~680 · P48g'],['訓前','乳酪+水果',false,'~280 · P18g'],['晚餐','烤三文魚+露筍+番薯',true,'~700 · P46g']],
+      [['早餐','炒蛋+牛油果多士',true,'~530 · P32g'],['午餐','自由餐 — 想食咩食咩(控份量)',false,'~700 · P35g'],['下午','希臘乳酪+莓',false,'~250 · P18g'],['晚餐','烤魚+灼菜+細碗藜麥',true,'~620 · P44g']],
+    ]},
+    { theme:'高蛋白省時 — 食材少、煮得快、meal prep 友好', days:[
+      [['早餐','蛋白奶昔+燕麥+花生醬',true,'~540 · P42g'],['午餐','大批烚雞胸+飯+西蘭花',true,'~660 · P52g'],['訓前','香蕉+乳酪',false,'~290 · P20g'],['晚餐','煎三文魚+番薯+菜',true,'~700 · P46g']],
+      [['早餐','烚蛋(4隻)+多士',true,'~490 · P36g'],['午餐','烚雞胸(預煮)+飯+灼菜',true,'~650 · P52g'],['訓前','蛋白棒',false,'~250 · P20g'],['晚餐','蕃茄煮牛肉碎+飯',true,'~700 · P48g']],
+      [['早餐','燕麥+蛋白粉',true,'~500 · P42g'],['午餐','吞拿魚飯團+灼菜',true,'~620 · P44g'],['訓前','乳酪+香蕉',false,'~290 · P20g'],['晚餐','煎雞扒+薯仔+菜',true,'~690 · P50g']],
+      [['早餐','炒蛋(3隻)+燕麥',true,'~520 · P34g'],['午餐','預煮牛肉+飯+菜',true,'~700 · P50g'],['訓前','蘋果+蛋白奶',false,'~280 · P22g'],['晚餐','烚蝦+番薯+西蘭花',true,'~600 · P48g']],
+      [['早餐','蛋白奶昔+全麥包+蛋',true,'~530 · P44g'],['午餐','烚雞胸+意粉+蕃茄',true,'~680 · P50g'],['訓前','蛋白棒',false,'~250 · P20g'],['晚餐','煎魚柳+薯仔+菜',true,'~640 · P44g']],
+      [['早餐','燕麥+乳酪+果仁',true,'~520 · P36g'],['午餐','預煮雞+飯+灼菜',true,'~650 · P50g'],['訓前','香蕉+蛋白奶',false,'~290 · P22g'],['晚餐','烚牛肉+番薯+西蘭花',true,'~680 · P50g']],
+      [['早餐','炒蛋+燕麥',true,'~500 · P34g'],['午餐','自由餐 — 想食咩食咩(控份量)',false,'~700 · P35g'],['下午','蛋白奶昔',false,'~150 · P25g'],['晚餐','清蒸雞+菜+細碗飯',true,'~620 · P46g']],
+    ]},
+    { theme:'西式家常 — 牛扒、烤雞、薯仔變化', days:[
+      [['早餐','炒蛋+牛油果+全麥包',true,'~560 · P34g'],['午餐','烤雞胸+薯蓉(少牛油)+菜',true,'~660 · P50g'],['訓前','乳酪+香蕉',false,'~290 · P20g'],['晚餐','煎牛扒(150g)+烤薯+西蘭花',true,'~720 · P50g']],
+      [['早餐','燕麥+蛋白粉+蘋果',true,'~510 · P40g'],['午餐','雞肉墨西哥碗(飯+豆+莎莎)',true,'~680 · P46g'],['訓前','蛋白棒',false,'~250 · P20g'],['晚餐','烤魚柳+薯角+雜菜',true,'~640 · P44g']],
+      [['早餐','炒蛋(3隻)+煙肉(瘦)+多士',true,'~540 · P36g'],['午餐','烤火雞肉漢堡(全麥包)+沙律',true,'~660 · P48g'],['訓前','香蕉+乳酪',false,'~290 · P20g'],['晚餐','焗雞胸+焗薯+露筍',true,'~680 · P50g']],
+      [['早餐','蛋白奶昔+燕麥',true,'~500 · P42g'],['午餐','烤牛肉+薯仔+灼菜',true,'~710 · P50g'],['訓前','蘋果+杏仁',false,'~280 · P14g'],['晚餐','煎三文魚+薯蓉+菜',true,'~700 · P46g']],
+      [['早餐','炒蛋+牛油果多士',true,'~560 · P34g'],['午餐','雞肉意粉(蕃茄醬)+菜',true,'~680 · P48g'],['訓前','蛋白棒',false,'~250 · P20g'],['晚餐','烤豬扒(瘦)+薯角+西蘭花',true,'~680 · P48g']],
+      [['早餐','燕麥+乳酪+莓',true,'~520 · P38g'],['午餐','烤雞+藜麥+雜菜',true,'~650 · P50g'],['訓前','香蕉+蛋白奶',false,'~290 · P22g'],['晚餐','煎牛扒+焗薯+菜',true,'~720 · P50g']],
+      [['早餐','炒蛋+多士',true,'~500 · P32g'],['午餐','自由餐 — 想食咩食咩(控份量)',false,'~700 · P35g'],['下午','乳酪+水果',false,'~250 · P18g'],['晚餐','烤魚+灼菜+細碗薯',true,'~640 · P44g']],
+    ]},
+    { theme:'清淡輕盈 — 多湯、蒸煮、減鈉,身體休息週', days:[
+      [['早餐','蒸蛋白+雞肉粥',true,'~470 · P38g'],['午餐','烚雞胸+冬瓜湯+飯',true,'~640 · P50g'],['訓前','香蕉+乳酪',false,'~290 · P20g'],['晚餐','清蒸魚+灼菜心+番薯',true,'~600 · P44g']],
+      [['早餐','燕麥+蛋白粉+藍莓',true,'~510 · P40g'],['午餐','蕃茄魚湯+雞肉+飯',true,'~620 · P46g'],['訓前','希臘乳酪+蘋果',false,'~280 · P20g'],['晚餐','蒸水蛋+蒸蝦+菜',true,'~580 · P46g']],
+      [['早餐','烚蛋(3隻)+燕麥',true,'~480 · P34g'],['午餐','烚瘦牛+蔬菜湯+飯',true,'~660 · P48g'],['訓前','乳酪+香蕉',false,'~290 · P20g'],['晚餐','蒸雞+灼西蘭花+紅薯',true,'~600 · P48g']],
+      [['早餐','蝦仁滑蛋+白粥',true,'~480 · P38g'],['午餐','豆腐魚湯+雞絲+飯',true,'~600 · P46g'],['訓前','蘋果+蛋白奶',false,'~280 · P22g'],['晚餐','蒸魚柳+蒸蛋+菜',true,'~580 · P44g']],
+      [['早餐','燕麥+乳酪+果仁',true,'~520 · P36g'],['午餐','烚雞胸+海帶湯+飯',true,'~640 · P50g'],['訓前','香蕉+蛋白棒',false,'~300 · P20g'],['晚餐','清蒸三文魚+菠菜+番薯',true,'~680 · P46g']],
+      [['早餐','蒸蛋+全麥包',true,'~470 · P34g'],['午餐','白切雞(去皮)+蔬菜湯+飯',true,'~620 · P48g'],['訓前','乳酪+莓',false,'~280 · P18g'],['晚餐','蒸蝦+灼菜+細碗飯',true,'~580 · P48g']],
+      [['早餐','燕麥+蛋',true,'~500 · P34g'],['午餐','自由餐 — 想食咩食咩(控份量)',false,'~700 · P35g'],['下午','希臘乳酪+水果',false,'~250 · P18g'],['晚餐','清湯灼魚+灼菜+細碗飯',true,'~600 · P44g']],
+    ]},
+  ];
+
+  function buildMeals() {
+    const tabs = document.getElementById('weekTabs');
+    const panels = document.getElementById('mealPanels');
+    WEEKS.forEach((wk, wi) => {
+      const tab = document.createElement('button');
+      tab.className = 'week-tab' + (wi===0?' active':'');
+      tab.textContent = '第 ' + (wi+1) + ' 週';
+      tab.onclick = () => selectWeek(wi);
+      tabs.appendChild(tab);
+
+      const panel = document.createElement('div');
+      panel.className = 'meal-panel' + (wi===0?' active':'');
+      panel.dataset.wi = wi;
+      const grid = document.createElement('div');
+      grid.className = 'meal-grid';
+      wk.days.forEach((day, di) => {
+        const isFree = di===6;
+        const slots = day.map(s => {
+          const badge = s[2] ? '<span class="home-badge">家</span>' : '';
+          return '<div class="meal-slot"><div class="meal-time">'+s[0]+'</div><div class="meal-name">'+s[1]+badge+'</div><div class="meal-macros">'+s[3]+'</div></div>';
+        }).join('');
+        const shake = '<div class="meal-slot"><div class="meal-time">'+SHAKE.t+'</div><div class="meal-name">'+SHAKE.n+'</div><div class="meal-macros">'+SHAKE.m+'</div></div>';
+        grid.innerHTML += '<div class="meal-day'+(isFree?' free':'')+'"><div class="meal-day-hdr">'+DAYS[di]+(isFree?' · 彈性日':'')+'</div>'+slots+shake+'</div>';
       });
-      document.getElementById('weekTheme').innerHTML = '<b>第 1 週主題：</b>' + WEEKS[0].theme;
-    }
-    function selectWeek(wi) {
-      document.querySelectorAll('.week-tab').forEach((t, i) => t.classList.toggle('active', i === wi));
-      document.querySelectorAll('.meal-panel').forEach(p => p.classList.toggle('active', +p.dataset.wi === wi));
-      document.getElementById('weekTheme').innerHTML = '<b>第 ' + (wi + 1) + ' 週主題：</b>' + WEEKS[wi].theme;
-    }
+      panel.appendChild(grid);
+      panels.appendChild(panel);
+    });
+    document.getElementById('weekTheme').innerHTML = '<b>第 1 週主題：</b>' + WEEKS[0].theme;
+  }
+  function selectWeek(wi) {
+    document.querySelectorAll('.week-tab').forEach((t,i)=>t.classList.toggle('active', i===wi));
+    document.querySelectorAll('.meal-panel').forEach(p=>p.classList.toggle('active', +p.dataset.wi===wi));
+    document.getElementById('weekTheme').innerHTML = '<b>第 '+(wi+1)+' 週主題：</b>' + WEEKS[wi].theme;
+  }
 
-    /* ============ PROGRESS TRACKER ============ */
-    const START_WEIGHT = 97, GOAL_WEIGHT = 76, START_BF = 29.5;
-    const KEY = 'gp_progress_entries';
-    let entries = [];
+  /* ============ PROGRESS TRACKER ============ */
+  const START_WEIGHT = 97, GOAL_WEIGHT = 76, START_BF = 29.5;
+  const KEY = 'gp_progress_entries';
+  let entries = [];
 
-    function loadEntries() {
+  // detect if localStorage is usable (some browsers / privacy modes block it)
+  let storageOK = false;
+  try { const t='__t'; localStorage.setItem(t,'1'); localStorage.removeItem(t); storageOK = true; }
+  catch(e){ storageOK = false; }
+
+  function loadEntries() {
+    if (storageOK) {
       try { const raw = localStorage.getItem(KEY); entries = raw ? JSON.parse(raw) : []; }
       catch (e) { entries = []; }
-      entries.sort((a, b) => a.date.localeCompare(b.date));
     }
-    function saveEntries() {
-      try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch (e) { console.error(e); }
+    entries.sort((a,b)=> a.date.localeCompare(b.date));
+  }
+  function saveEntries() {
+    if (storageOK) {
+      try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch (e) { storageOK = false; }
     }
-    function fmt(n) { return (n === null || n === undefined || n === '') ? '—' : n; }
+    // if storage blocked, data still lives in the `entries` array for this session
+  }
+  function fmt(n){ return (n===null||n===undefined||n==='')?'—':n; }
 
-    function renderStats() {
-      const last = entries[entries.length - 1], prev = entries[entries.length - 2];
-      if (!last) return;
-      document.getElementById('scWeight').innerHTML = last.weight + '<span class="sc-unit">kg</span>';
-      const wd = document.getElementById('scWeightDelta');
-      if (prev) { const d = (last.weight - prev.weight).toFixed(1); wd.textContent = (d > 0 ? '▲ +' : '▼ ') + d + ' kg（對上一次）'; wd.className = 'sc-delta ' + (d < 0 ? 'down' : d > 0 ? 'up' : 'flat'); }
-      else { wd.textContent = '第一筆記錄'; wd.className = 'sc-delta flat'; }
-      document.getElementById('scLost').innerHTML = (START_WEIGHT - last.weight).toFixed(1) + '<span class="sc-unit">kg</span>';
-      if (last.bf) {
-        document.getElementById('scBf').innerHTML = last.bf + '<span class="sc-unit">%</span>';
-        const bd = (last.bf - START_BF).toFixed(1); const bfd = document.getElementById('scBfDelta');
-        bfd.textContent = bd <= 0 ? ('▼ ' + bd + '%（由起點）') : ('▲ +' + bd + '%'); bfd.className = 'sc-delta ' + (bd < 0 ? 'down' : 'flat');
-      }
-      document.getElementById('scToGoal').innerHTML = (last.weight - GOAL_WEIGHT).toFixed(1) + '<span class="sc-unit">kg</span>';
-      const pct = Math.max(4, Math.min(100, ((START_WEIGHT - last.weight) / (START_WEIGHT - GOAL_WEIGHT)) * 100));
-      document.getElementById('roadmapFill').style.width = pct + '%';
-      document.getElementById('roadmapCaption').innerHTML = '你已經由 97kg 去到 <b>' + last.weight + 'kg</b>，完成咗成個旅程嘅 <b>' + pct.toFixed(0) + '%</b>。繼續落去！';
-      document.getElementById('weightLatest').textContent = last.weight + ' kg';
-      document.getElementById('bfLatest').textContent = last.bf ? (last.bf + '%') : '';
+  function renderStats() {
+    const last = entries[entries.length-1], prev = entries[entries.length-2];
+    if (!last) return;
+    document.getElementById('scWeight').innerHTML = last.weight + '<span class="sc-unit">kg</span>';
+    const wd = document.getElementById('scWeightDelta');
+    if (prev) { const d=(last.weight-prev.weight).toFixed(1); wd.textContent=(d>0?'▲ +':'▼ ')+d+' kg（對上一次）'; wd.className='sc-delta '+(d<0?'down':d>0?'up':'flat'); }
+    else { wd.textContent='第一筆記錄'; wd.className='sc-delta flat'; }
+    document.getElementById('scLost').innerHTML = (START_WEIGHT-last.weight).toFixed(1) + '<span class="sc-unit">kg</span>';
+    if (last.bf) {
+      document.getElementById('scBf').innerHTML = last.bf + '<span class="sc-unit">%</span>';
+      const bd=(last.bf-START_BF).toFixed(1); const bfd=document.getElementById('scBfDelta');
+      bfd.textContent = bd<=0?('▼ '+bd+'%（由起點）'):('▲ +'+bd+'%'); bfd.className='sc-delta '+(bd<0?'down':'flat');
     }
+    document.getElementById('scToGoal').innerHTML = (last.weight-GOAL_WEIGHT).toFixed(1) + '<span class="sc-unit">kg</span>';
+    const pct = Math.max(4, Math.min(100, ((START_WEIGHT-last.weight)/(START_WEIGHT-GOAL_WEIGHT))*100));
+    document.getElementById('roadmapFill').style.width = pct+'%';
+    document.getElementById('roadmapCaption').innerHTML = '你已經由 97kg 去到 <b>'+last.weight+'kg</b>，完成咗成個旅程嘅 <b>'+pct.toFixed(0)+'%</b>。繼續落去！';
+    document.getElementById('weightLatest').textContent = last.weight + ' kg';
+    document.getElementById('bfLatest').textContent = last.bf ? (last.bf+'%') : '';
+  }
 
-    function renderHistory() {
-      const body = document.getElementById('historyBody');
-      if (!entries.length) { body.innerHTML = '<tr><td colspan="8" style="color:var(--gray4);text-align:center;padding:24px;">仲未有記錄</td></tr>'; return; }
-      body.innerHTML = entries.slice().reverse().map(e =>
-        '<tr><td class="date">' + e.date + '</td><td class="weight">' + e.weight + '</td><td>' + fmt(e.bf) + (e.bf ? '%' : '') +
-        '</td><td class="hide-mobile">' + fmt(e.waist) + '</td><td class="hide-mobile">' + fmt(e.chest) +
-        '</td><td class="hide-mobile">' + fmt(e.arm) + '</td><td class="hide-mobile">' + fmt(e.thigh) +
-        '</td><td><button class="del-btn" data-date="' + e.date + '">✕</button></td></tr>'
-      ).join('');
-      body.querySelectorAll('.del-btn').forEach(b => { b.onclick = () => { entries = entries.filter(x => x.date !== b.dataset.date); saveEntries(); renderAll(); }; });
-    }
+  function renderHistory() {
+    const body = document.getElementById('historyBody');
+    if (!entries.length) { body.innerHTML='<tr><td colspan="8" style="color:var(--gray4);text-align:center;padding:24px;">仲未有記錄</td></tr>'; return; }
+    body.innerHTML = entries.slice().reverse().map(e =>
+      '<tr><td class="date">'+e.date+'</td><td class="weight">'+e.weight+'</td><td>'+fmt(e.bf)+(e.bf?'%':'')+
+      '</td><td class="hide-mobile">'+fmt(e.waist)+'</td><td class="hide-mobile">'+fmt(e.chest)+
+      '</td><td class="hide-mobile">'+fmt(e.arm)+'</td><td class="hide-mobile">'+fmt(e.thigh)+
+      '</td><td><button class="del-btn" data-date="'+e.date+'">✕</button></td></tr>'
+    ).join('');
+    body.querySelectorAll('.del-btn').forEach(b=>{ b.onclick=()=>{ entries=entries.filter(x=>x.date!==b.dataset.date); saveEntries(); renderAll(); }; });
+  }
 
-    function drawChart(canvasId, emptyId, getVal, color, startVal) {
-      const cv = document.getElementById(canvasId), empty = document.getElementById(emptyId);
-      const pts = entries.filter(e => getVal(e) != null && getVal(e) !== '').map(e => ({ d: e.date, v: +getVal(e) }));
-      if (pts.length < 1) { cv.style.display = 'none'; empty.style.display = 'block'; return; }
-      cv.style.display = 'block'; empty.style.display = 'none';
-      const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = 190;
-      cv.width = W * dpr; cv.height = H * dpr; const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
-      const vals = pts.map(p => p.v); if (startVal != null) vals.push(startVal);
-      let min = Math.min(...vals), max = Math.max(...vals); if (min === max) { min -= 1; max += 1; } const pad = (max - min) * 0.15; min -= pad; max += pad;
-      const padL = 42, padR = 14, padT = 14, padB = 24;
-      const x = i => padL + (i / Math.max(1, pts.length - 1)) * (W - padL - padR);
-      const y = v => padT + (1 - (v - min) / (max - min)) * (H - padT - padB);
-      ctx.strokeStyle = '#262626'; ctx.fillStyle = '#888'; ctx.font = '10px monospace'; ctx.lineWidth = 1;
-      for (let i = 0; i <= 3; i++) { const v = min + (max - min) * i / 3, yy = y(v); ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W - padR, yy); ctx.stroke(); ctx.fillText(v.toFixed(1), 4, yy + 3); }
-      if (canvasId === 'weightChart' && GOAL_WEIGHT >= min && GOAL_WEIGHT <= max) { const gy = y(GOAL_WEIGHT); ctx.strokeStyle = 'rgba(212,255,0,.4)'; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(W - padR, gy); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = 'rgba(212,255,0,.7)'; ctx.fillText('目標 ' + GOAL_WEIGHT, W - padR - 50, gy - 4); }
-      // area fill
-      const grad = ctx.createLinearGradient(0, padT, 0, H - padB); grad.addColorStop(0, color + '33'); grad.addColorStop(1, color + '00');
-      ctx.beginPath(); pts.forEach((p, i) => { const xx = x(i), yy = y(p.v); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }); ctx.lineTo(x(pts.length - 1), H - padB); ctx.lineTo(x(0), H - padB); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
-      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath(); pts.forEach((p, i) => { const xx = x(i), yy = y(p.v); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }); ctx.stroke();
-      ctx.fillStyle = color; pts.forEach((p, i) => { ctx.beginPath(); ctx.arc(x(i), y(p.v), 3.5, 0, 7); ctx.fill(); });
-    }
-    function renderCharts() {
-      drawChart('weightChart', 'weightEmpty', e => e.weight, '#d4ff00', START_WEIGHT);
-      drawChart('bfChart', 'bfEmpty', e => e.bf, '#7eb8ff', START_BF);
-    }
-    function renderAll() { renderStats(); renderHistory(); renderCharts(); }
+  function drawChart(canvasId, emptyId, getVal, color, startVal) {
+    const cv=document.getElementById(canvasId), empty=document.getElementById(emptyId);
+    const pts = entries.filter(e=>getVal(e)!=null && getVal(e)!=='').map(e=>({d:e.date,v:+getVal(e)}));
+    if (pts.length<1){ cv.style.display='none'; empty.style.display='block'; return; }
+    cv.style.display='block'; empty.style.display='none';
+    const dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=190;
+    cv.width=W*dpr; cv.height=H*dpr; const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+    const vals=pts.map(p=>p.v); if(startVal!=null) vals.push(startVal);
+    let min=Math.min(...vals), max=Math.max(...vals); if(min===max){min-=1;max+=1;} const pad=(max-min)*0.15; min-=pad; max+=pad;
+    const padL=42,padR=14,padT=14,padB=24;
+    const x=i=>padL+(i/Math.max(1,pts.length-1))*(W-padL-padR);
+    const y=v=>padT+(1-(v-min)/(max-min))*(H-padT-padB);
+    ctx.strokeStyle='#262626'; ctx.fillStyle='#888'; ctx.font='10px monospace'; ctx.lineWidth=1;
+    for(let i=0;i<=3;i++){ const v=min+(max-min)*i/3, yy=y(v); ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke(); ctx.fillText(v.toFixed(1),4,yy+3); }
+    if(canvasId==='weightChart' && GOAL_WEIGHT>=min && GOAL_WEIGHT<=max){ const gy=y(GOAL_WEIGHT); ctx.strokeStyle='rgba(212,255,0,.4)'; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(padL,gy); ctx.lineTo(W-padR,gy); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='rgba(212,255,0,.7)'; ctx.fillText('目標 '+GOAL_WEIGHT, W-padR-50, gy-4); }
+    // area fill
+    const grad=ctx.createLinearGradient(0,padT,0,H-padB); grad.addColorStop(0,color+'33'); grad.addColorStop(1,color+'00');
+    ctx.beginPath(); pts.forEach((p,i)=>{const xx=x(i),yy=y(p.v); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}); ctx.lineTo(x(pts.length-1),H-padB); ctx.lineTo(x(0),H-padB); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+    ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath(); pts.forEach((p,i)=>{const xx=x(i),yy=y(p.v); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}); ctx.stroke();
+    ctx.fillStyle=color; pts.forEach((p,i)=>{ctx.beginPath(); ctx.arc(x(i),y(p.v),3.5,0,7); ctx.fill();});
+  }
+  function renderCharts() {
+    drawChart('weightChart','weightEmpty', e=>e.weight, '#d4ff00', START_WEIGHT);
+    drawChart('bfChart','bfEmpty', e=>e.bf, '#7eb8ff', START_BF);
+  }
+  function renderAll(){ renderStats(); renderHistory(); renderCharts(); }
 
-    // stepper buttons
-    document.querySelectorAll('.stepper button').forEach(btn => {
-      btn.onclick = () => {
-        const inp = document.getElementById(btn.dataset.target); const step = parseFloat(btn.dataset.step);
-        const cur = parseFloat(inp.value) || (btn.dataset.target === 'inWeight' ? START_WEIGHT : btn.dataset.target === 'inBf' ? START_BF : 0);
-        inp.value = (cur + step).toFixed(1);
-      };
-    });
+  // stepper buttons
+  document.querySelectorAll('.stepper button').forEach(btn=>{
+    btn.onclick=()=>{ const inp=document.getElementById(btn.dataset.target); const step=parseFloat(btn.dataset.step);
+      const cur=parseFloat(inp.value)|| (btn.dataset.target==='inWeight'?START_WEIGHT:btn.dataset.target==='inBf'?START_BF:0);
+      inp.value=(cur+step).toFixed(1); };
+  });
 
-    document.getElementById('saveBtn').onclick = () => {
-      const date = document.getElementById('inDate').value;
-      const weight = parseFloat(document.getElementById('inWeight').value);
-      const msg = document.getElementById('formMsg');
-      if (!date || isNaN(weight)) { msg.style.color = '#ff8fa3'; msg.textContent = '請最少填日期同體重'; return; }
-      const entry = { date, weight, bf: get('inBf'), waist: get('inWaist'), chest: get('inChest'), arm: get('inArm'), thigh: get('inThigh') };
-      entries = entries.filter(e => e.date !== date); entries.push(entry); entries.sort((a, b) => a.date.localeCompare(b.date));
-      saveEntries();
-      msg.style.color = '#d4ff00'; msg.textContent = '✓ 已儲存！繼續努力 💪';
-      ['inWeight', 'inBf', 'inWaist', 'inChest', 'inArm', 'inThigh'].forEach(id => document.getElementById(id).value = '');
-      renderAll(); setTimeout(() => msg.textContent = '', 2500);
-    };
+  document.getElementById('saveBtn').onclick = ()=>{
+    const date=document.getElementById('inDate').value;
+    const weight=parseFloat(document.getElementById('inWeight').value);
+    const msg=document.getElementById('formMsg');
+    if(!date||isNaN(weight)){ msg.style.color='#ff8fa3'; msg.textContent='請最少填日期同體重'; return; }
+    const get=id=>{const v=document.getElementById(id).value; return v===''?null:parseFloat(v);};
+    const entry={date,weight,bf:get('inBf'),waist:get('inWaist'),chest:get('inChest'),arm:get('inArm'),thigh:get('inThigh')};
+    entries=entries.filter(e=>e.date!==date); entries.push(entry); entries.sort((a,b)=>a.date.localeCompare(b.date));
+    saveEntries();
+    msg.style.color='#d4ff00';
+    msg.textContent = storageOK ? '✓ 已儲存！繼續努力 💪' : '✓ 已記錄（此瀏覽器唔支援永久儲存，閂咗頁會唔記得）';
+    ['inWeight','inBf','inWaist','inChest','inArm','inThigh'].forEach(id=>document.getElementById(id).value='');
+    renderAll(); setTimeout(()=>msg.textContent='',4000);
+  };
 
-    // init
-    document.getElementById('inDate').value = new Date().toISOString().slice(0, 10);
-    window.addEventListener('resize', renderCharts);
-    buildMeals();
-    loadEntries(); renderAll();
-  </script>
+  // init
+  document.getElementById('inDate').value=new Date().toISOString().slice(0,10);
+  window.addEventListener('resize', renderCharts);
+  buildMeals();
+  loadEntries(); renderAll();
+</script>
 
 </body>
-
 </html>
